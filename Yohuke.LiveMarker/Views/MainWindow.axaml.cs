@@ -15,6 +15,8 @@ public partial class MainWindow : Window
     {
         ViewModel = new MainWindowViewModel(this);
         InitializeComponent();
+        
+        ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.PreferSystemChrome;
     }
     
     private async void MarkerDataGrid_OnKeyDown(object sender, KeyEventArgs e)

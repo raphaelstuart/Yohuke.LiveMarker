@@ -6,12 +6,13 @@
         xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
         xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
         xmlns:converters="clr-namespace:Yohuke.LiveMarker.Converters"
-        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="800"
-        Width="750" Height="800" WindowStartupLocation="CenterScreen"
         x:Class="Yohuke.LiveMarker.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/favicon.ico"
-        Title="Live Marker">
+        x:DataType="vm:MainWindowViewModel" MinHeight="92" MinWidth="600"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="800" Width="750" Height="800" 
+        WindowStartupLocation="CenterScreen" Icon="/Assets/favicon.ico" Title="Live Marker"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="PreferSystemChrome"
+        ExtendClientAreaTitleBarHeightHint="-1">
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
@@ -35,9 +36,9 @@
         <KeyBinding Gesture="{OnPlatform Ctrl+D6, macOS=cmd+D6}" Command="{Binding SelectColorCommand}" CommandParameter="6"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+D7, macOS=cmd+D7}" Command="{Binding SelectColorCommand}" CommandParameter="7"/>
     </Window.KeyBindings>
-    <Grid RowDefinitions="32, *, 48">
-        <Grid Grid.Row="0" ColumnDefinitions="*, 220" Margin="8 8 8 0">
-            <Menu Grid.Column="0">
+    <Grid RowDefinitions="Auto, *, 48">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, 220" Margin="8 0 8 0">
+            <Menu Grid.Column="0" Margin="{OnPlatform 0, macOS=72 0 0 0}">
                 <MenuItem Header="File">
                     <MenuItem Header="_Create" Command="{Binding CreateCommand}" InputGesture="{OnPlatform Ctrl+N, macOS=cmd+N}"/>
                     <Separator/>
@@ -45,6 +46,7 @@
                     <MenuItem Header="_Load" Command="{Binding LoadCommand}" InputGesture="{OnPlatform Ctrl+O, macOS=cmd+O}"/>
                     <Separator/>
                     <MenuItem Header="_Reset Start Time" Command="{Binding ResetStartTimeCommand}"/>
+                    <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime}"/>
                     <Separator/>
                     <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
                 </MenuItem>
@@ -99,7 +101,6 @@
                     <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" InputGesture="{OnPlatform Ctrl+A, macOS=cmd+A}"/>
                 </MenuItem>
             </Menu>    
-            <TextBox Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding Data.StartTime}"/>
         </Grid>
         <DataGrid Margin="8" Grid.Row="1" ItemsSource="{Binding Data.Marker}"
                   CanUserReorderColumns="False"
