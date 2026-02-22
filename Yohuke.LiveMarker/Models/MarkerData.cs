@@ -22,9 +22,14 @@ public partial class MarkerData : ObservableObject
     [property: YamlMember]
     private MarkerColor markerColor;
 
-    partial void OnRealDateTimeChanged(DateTime oldValue, DateTime newValue)
+    // partial void OnRealDateTimeChanged(DateTime oldValue, DateTime newValue)
+    // {
+    //     LiveTime += newValue - oldValue;
+    // }
+
+    partial void OnLiveTimeChanged(TimeSpan oldValue, TimeSpan newValue)
     {
-        LiveTime += newValue - oldValue;
+        RealDateTime = RealDateTime - oldValue + newValue;
     }
     
     public MarkerData CreateSnapshot()

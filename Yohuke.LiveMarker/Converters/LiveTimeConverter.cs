@@ -1,22 +1,27 @@
-#nullable enable
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using Avalonia;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 
 namespace Yohuke.LiveMarker.Converters;
 
-public sealed class LiveTimeMultiConverter : IMultiValueConverter
+public class LiveTimeConverter : IValueConverter
 {
-    public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Count < 2 || values[0] is not DateTime real || values[1] is not DateTime start)
+        if (value is TimeSpan ts)
         {
-            return AvaloniaProperty.UnsetValue;
+            return ts.ToString(@"hh\:mm\:ss");
         }
+        return string.Empty;
+    }
 
-        var delta = real - start;
-        return delta.ToString(@"hh\:mm\:ss\.fff", culture);
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is string s && TimeSpan.TryParse(s, out var result))
+        {
+            return result;
+        }
+        throw new DataValidationException("Format is hh:mm:ss");
     }
 }

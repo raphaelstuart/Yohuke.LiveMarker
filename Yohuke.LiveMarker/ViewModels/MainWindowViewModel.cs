@@ -1,6 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Collections;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MsBox.Avalonia;
 using Yohuke.LiveMarker.Actions;
@@ -16,9 +19,11 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     [ObservableProperty] private LiveMarkerData data;
     [ObservableProperty] private MarkerColor currentSelectedColor = MarkerColorUtilities.DefaultColor.Color;
     [ObservableProperty] private string currentInputMessage;
-    [ObservableProperty] private DateTime inputTime = DateTime.Now;
+    [ObservableProperty] private DateTime inputRealTime = DateTime.Now;
+    [ObservableProperty] private TimeSpan inputLiveTime = new (0, 0, 0);
     [ObservableProperty] private bool isLoading = false;
     [ObservableProperty] private string currentFileLocation;
+    [ObservableProperty] private bool useInputRealTime = true;
 
     public ActionManager ActionManager { get; } = new();
 
@@ -119,7 +124,6 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private async Task LoadInternal(string path)
     {
         IsLoading = true;
-
         try
         {
             var d = await LiveMarkerData.Load(path);
@@ -138,6 +142,8 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
             {
                 marker.PropertyChanged += OnDataPropertyChanged;
             }
+            
+            SetSource();
         }
         catch (Exception ex)
         {
@@ -158,6 +164,14 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         ActionManager.Clear();
 
         await SaveInternal(path);
+    }
+
+    private void SetSource()
+    {
+        var view = new DataGridCollectionView(Data.Marker);
+        view.SortDescriptions.Add(DataGridSortDescription.FromPath(nameof(MarkerData.RealDateTime), ListSortDirection.Ascending));
+
+        View.MarkerDataGrid.ItemsSource = view;
     }
     
     private async Task ExportInternal(bool isText, string path)

@@ -26,10 +26,19 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         var d = new MarkerData
         {
             Message = CurrentInputMessage,
-            RealDateTime = InputTime,
             MarkerColor = CurrentSelectedColor,
-            LiveTime = InputTime - Data.StartTime
         };
+
+        if (UseInputRealTime)
+        {
+            d.RealDateTime = InputRealTime;
+            d.LiveTime = InputRealTime - Data.StartTime;
+        }
+        else
+        {
+            d.LiveTime = InputLiveTime;
+            d.RealDateTime = Data.StartTime + InputLiveTime;
+        }
 
         d.PropertyChanged += OnDataPropertyChanged;
 
@@ -38,6 +47,12 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
         CurrentInputMessage = string.Empty;
         await AutoSave();
+    }
+    
+    [RelayCommand]
+    private void SwitchMode()
+    {
+        UseInputRealTime = !UseInputRealTime;
     }
 
     [RelayCommand]
@@ -57,7 +72,8 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private void ResetInputTime()
     {
         manuallyChangingInputTime = true;
-        InputTime = DateTime.Now;
+        InputRealTime = DateTime.Now;
+        InputLiveTime = DateTime.Now - Data.StartTime;
     }
     
     [RelayCommand]

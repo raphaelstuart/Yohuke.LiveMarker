@@ -22,7 +22,7 @@ public partial class LiveMarkerData : ObservableObject
     {
         foreach (var markerData in Marker)
         {
-            markerData.LiveTime = markerData.RealDateTime - StartTime;
+            markerData.RealDateTime = StartTime + markerData.LiveTime;
         }
     }
 

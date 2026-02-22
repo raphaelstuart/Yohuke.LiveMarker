@@ -6,6 +6,7 @@
         xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
         xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
         xmlns:converters="clr-namespace:Yohuke.LiveMarker.Converters"
+        xmlns:markup="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
         x:Class="Yohuke.LiveMarker.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel" MinHeight="92" MinWidth="600"
         mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="800" Width="750" Height="800" 
@@ -18,6 +19,7 @@
     </Design.DataContext>
     <Window.Resources>
         <converters:LiveTimeMultiConverter x:Key="LiveTimeMultiConverter"/>
+        <converters:LiveTimeConverter x:Key="LiveTimeConverter"/>
         <converters:MarkerColorToBrushConverter x:Key="MarkerColorToBrushConverter"/>
         <converters:MarkerColorToDefinitionConverter x:Key="MarkerColorToDefinitionConverter"/>
     </Window.Resources>
@@ -46,7 +48,7 @@
                     <MenuItem Header="_Load" Command="{Binding LoadCommand}" InputGesture="{OnPlatform Ctrl+O, macOS=cmd+O}"/>
                     <Separator/>
                     <MenuItem Header="_Reset Start Time" Command="{Binding ResetStartTimeCommand}"/>
-                    <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime}"/>
+                    <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <Separator/>
                     <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
                 </MenuItem>
@@ -102,7 +104,7 @@
                 </MenuItem>
             </Menu>    
         </Grid>
-        <DataGrid Margin="8" Grid.Row="1" ItemsSource="{Binding Data.Marker}"
+        <DataGrid x:Name="MarkerDataGrid" Margin="8" Grid.Row="1" ItemsSource="{Binding Data.Marker}"
                   CanUserReorderColumns="False"
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
@@ -112,7 +114,7 @@
                   BeginningEdit="DataGrid_OnBeginningEdit"
                   CellEditEnded="DataGrid_OnCellEditEnded">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="" Width="65" CanUserResize="False">
+                <DataGridTemplateColumn Header="" Width="65" CanUserResize="False" SortMemberPath="MarkerColor">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="{x:Type models:MarkerData}">
                             <Ellipse Fill="{Binding MarkerColor, Converter={StaticResource MarkerColorToBrushConverter}}" Width="12" Height="12"/>
@@ -127,23 +129,39 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime, Mode=TwoWay}"/>
-                <DataGridTextColumn Header="Live Time" Binding="{Binding LiveTime, Mode=TwoWay}" IsReadOnly="True">
+                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime, Mode=TwoWay}" IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Live Time" SortMemberPath="RealDateTime">
                    <!-- <DataGridTextColumn.Binding> -->
                    <!--     <MultiBinding Converter="{StaticResource LiveTimeMultiConverter}"> -->
                    <!--         <Binding Path="RealDateTime" Mode="TwoWay"/> -->
                    <!--         <Binding Path="#Root.ViewModel.StartTime" Mode="TwoWay"/> -->
                    <!--     </MultiBinding> -->
                    <!-- </DataGridTextColumn.Binding>  -->
-                </DataGridTextColumn>
+                   <DataGridTemplateColumn.CellTemplate>
+                       <DataTemplate DataType="{x:Type models:MarkerData}">
+                           <TextBlock Text="{Binding LiveTime, Converter={StaticResource LiveTimeConverter}}"
+                                      VerticalAlignment="Center" Margin="4 0"/>
+                       </DataTemplate>
+                   </DataGridTemplateColumn.CellTemplate>
+                   <DataGridTemplateColumn.CellEditingTemplate>
+                       <DataTemplate DataType="{x:Type models:MarkerData}">
+                           <TextBox Text="{Binding LiveTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, Converter={StaticResource LiveTimeConverter}}"
+                                    VerticalContentAlignment="Center"/>
+                       </DataTemplate>
+                   </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
             </DataGrid.Columns>
         </DataGrid>
         
-        <Grid Grid.Row="2" ColumnDefinitions="150,*,65" Margin="8 4 8 8" VerticalAlignment="Stretch">
-            <Label VerticalAlignment="Center" Content="{Binding InputTime, Mode=TwoWay}"/>
-            <TextBox VerticalContentAlignment="Center" Text="{Binding CurrentInputMessage, Mode=TwoWay}" Grid.Column="1"/>
-            <views:ColorChoiceCombo Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+        <Grid Grid.Row="2" ColumnDefinitions="150,38,*,65" Margin="8 4 8 8" VerticalAlignment="Stretch">
+            <Label Grid.Column="0" IsVisible="{Binding UseInputRealTime}" VerticalAlignment="Center" Content="{Binding InputRealTime, Mode=TwoWay}"/>
+            <TextBox Grid.Column="0" IsVisible="{Binding !UseInputRealTime}" Text="{Binding InputLiveTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, Converter={StaticResource LiveTimeConverter}}"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+            <ToggleButton Grid.Column="1" Content="{markup:SymbolIcon Timer}" Command="{Binding SwitchModeCommand}" 
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <TextBox VerticalContentAlignment="Center" Grid.Column="2" Text="{Binding CurrentInputMessage, Mode=TwoWay}" />
+            <views:ColorChoiceCombo Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                     SelectedColor="{Binding CurrentSelectedColor, Converter={StaticResource MarkerColorToDefinitionConverter}, Mode=TwoWay}"/>
         </Grid>
         
