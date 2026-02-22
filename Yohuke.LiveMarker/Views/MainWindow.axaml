@@ -43,8 +43,7 @@
                     <MenuItem Header="To Excel (.xlsx)" Command="{Binding ExportExcelCommand}"/>
                 </MenuItem>
                 <MenuItem Header="Help">
-                    <MenuItem Header="_About"/>
-                    <MenuItem Header="_Shortcuts"/>
+                    <MenuItem Header="_About" Command="{Binding ShowAboutCommand}"/>
                 </MenuItem>
             </Menu>    
             <TextBox Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding Data.StartTime}"/>
@@ -92,7 +91,7 @@
                                     SelectedColor="{Binding CurrentSelectedColor, Converter={StaticResource MarkerColorToDefinitionConverter}, Mode=TwoWay}"/>
         </Grid>
         
-        <Grid Grid.ColumnSpan="2" Grid.RowSpan="3" Background="#80000000" IsVisible="{Binding IsLoading}">
+        <Grid Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="3" Background="#80000000" IsVisible="{Binding IsLoading}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <ProgressBar IsIndeterminate="True" Width="200" Height="20"/>
                 <TextBlock Text="Please Wait..." Foreground="White" HorizontalAlignment="Center" Margin="0 8 0 0"/>

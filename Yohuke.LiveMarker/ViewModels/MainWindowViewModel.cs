@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MsBox.Avalonia;
@@ -16,8 +17,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     [ObservableProperty] private string currentInputMessage;
     [ObservableProperty] private DateTime inputTime = DateTime.Now;
     [ObservableProperty] private bool isLoading = false;
-
-    private string CurrentFileLocation { get; set; }
+    [ObservableProperty] private string currentFileLocation;
 
     private async Task ShowErrorAsync(string message)
     {
@@ -33,6 +33,22 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         }
     }
 
+    private async Task AutoSave()
+    {
+        if (!string.IsNullOrWhiteSpace(CurrentFileLocation))
+        {
+            await SaveInternal(CurrentFileLocation);
+        }
+    }
+    
+    private async void OnDataPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+    {
+        if (!string.IsNullOrWhiteSpace(CurrentFileLocation))
+        {
+            await SaveInternal(CurrentFileLocation);
+        }
+    }
+    
     private async Task SaveInternal(string path)
     {
         IsLoading = true;

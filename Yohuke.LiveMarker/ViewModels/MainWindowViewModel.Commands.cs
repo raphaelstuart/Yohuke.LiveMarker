@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using Yohuke.LiveMarker.Exporters;
+using MsBox.Avalonia;
 using Yohuke.LiveMarker.Models;
 using Yohuke.LiveMarker.Utilities;
 using Yohuke.LiveMarker.Views;
@@ -20,10 +20,16 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     public IAsyncRelayCommand LoadCommand { get; private set; }
     public IAsyncRelayCommand ExportTextCommand { get; private set; }
     public IAsyncRelayCommand ExportExcelCommand { get; private set; }
-    public ICommand DeleteMarkerCommand { get; private set; }
+    public IAsyncRelayCommand DeleteMarkerCommand { get; private set; }
+    public IAsyncRelayCommand ShowAboutCommand { get; private set; }
 
     private async Task AddMarker()
     {
+        if (string.IsNullOrWhiteSpace(CurrentInputMessage))
+        {
+            return;
+        }
+        
         var d = new MarkerData
         {
             Message = CurrentInputMessage,
@@ -32,13 +38,11 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
             LiveTime = InputTime - Data.StartTime
         };
 
+        d.PropertyChanged += OnDataPropertyChanged;
+
         Data.Marker.Add(d);
         CurrentInputMessage = string.Empty;
-
-        if (!string.IsNullOrWhiteSpace(CurrentFileLocation))
-        {
-            await SaveInternal(CurrentFileLocation);
-        }
+        await AutoSave();
     }
 
     private async Task CreateNew()
@@ -97,7 +101,6 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     
     private async Task QuickSaveAsync()
     {
-        IsLoading = true;
         if (string.IsNullOrWhiteSpace(CurrentFileLocation))
         {
             await SaveAsync();
@@ -106,7 +109,6 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         {
             await SaveInternal(CurrentFileLocation);
         }
-        IsLoading = false;
     }
 
     private async Task ExportTextAsync()
@@ -133,12 +135,21 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         }
     }
 
-    private void DeleteMarker(MarkerData marker)
+    private async Task DeleteMarker(MarkerData marker)
     {
         if (marker != null)
         {
+            marker.PropertyChanged -= OnDataPropertyChanged;
             Data.Marker.Remove(marker);
+
+            await AutoSave();
         }
+    }
+
+    private async Task ShowAbout()
+    {
+        var box = MessageBoxManager.GetMessageBoxStandard("About", $"By 夜更けのシンフォニー(yosymph.com)\nVersion: {GetType().Assembly.GetName().Version}\nOpen source under GPLv3 License.");
+        await box.ShowAsPopupAsync(View);
     }
     
     private void BindCommands()
@@ -152,6 +163,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         LoadCommand = new AsyncRelayCommand(LoadAsync);
         ExportTextCommand = new AsyncRelayCommand(ExportTextAsync);
         ExportExcelCommand = new AsyncRelayCommand(ExportExcelAsync);
-        DeleteMarkerCommand = new RelayCommand<MarkerData>(DeleteMarker);
+        DeleteMarkerCommand = new AsyncRelayCommand<MarkerData>(DeleteMarker);
+        ShowAboutCommand = new AsyncRelayCommand(ShowAbout);
     }
 }

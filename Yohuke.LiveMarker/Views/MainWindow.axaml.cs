@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using MsBox.Avalonia;
@@ -16,22 +17,19 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
     
-    private void MarkerDataGrid_OnKeyDown(object? sender, KeyEventArgs e)
+    private async void MarkerDataGrid_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Delete && sender is DataGrid grid)
+        if (e.Key == Key.Delete && sender is DataGrid { SelectedItem: MarkerData marker })
         {
-            if (grid.SelectedItem is MarkerData marker)
-            {
-                ViewModel.DeleteMarkerCommand.Execute(marker);
-                e.Handled = true;
-            }
+            await ViewModel.DeleteMarkerCommand.ExecuteAsync(marker);
+            e.Handled = true;
         }
     }
 
     private bool isClosing;
     protected override async void OnClosing(WindowClosingEventArgs e)
     {
-        if (isClosing)
+        if (isClosing || !string.IsNullOrWhiteSpace(ViewModel.CurrentFileLocation))
         {
             return;
         }
@@ -47,6 +45,7 @@ public partial class MainWindow : Window
 
         if (result == ButtonResult.Yes)
         {
+            isClosing = true;
             await ViewModel.QuickSaveCommand.ExecuteAsync(null);
             Close();
         }
