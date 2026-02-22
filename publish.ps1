@@ -1,8 +1,6 @@
 Import-Module './modules.psm1'
 
-$build_platforms = "win-x64", "linux-x64", "osx-arm64"
-
-Invoke-Expression -Command .\build-webui.ps1
+$build_platforms = "win-x64", "win-arm64", "linux-x64", "osx-arm64"
 
 if (Test-Path "./publish")
 {
