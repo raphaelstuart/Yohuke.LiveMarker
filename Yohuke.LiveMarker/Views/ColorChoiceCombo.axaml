@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
+             xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Yohuke.LiveMarker.Views.ColorChoiceCombo">
+    <ComboBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+              ItemsSource="{Binding ColorChoices, RelativeSource={RelativeSource AncestorType=views:ColorChoiceCombo}}"
+              SelectedItem="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=views:ColorChoiceCombo}, Mode=TwoWay}">
+        <ComboBox.ItemTemplate>
+            <DataTemplate DataType="{x:Type models:MarkerColorDefinition}">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Fill="{Binding DisplayColor}" Width="12" Height="12"/>
+                    <TextBlock IsVisible="{Binding ShowColorName, RelativeSource={RelativeSource AncestorType=views:ColorChoiceCombo}, Mode=TwoWay}" 
+                               Margin="4 0 0 0" VerticalAlignment="Center" Text="{Binding Color}"/>
+                </StackPanel>
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+    </ComboBox>
+</UserControl>

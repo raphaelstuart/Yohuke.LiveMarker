@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yohuke.LiveMarker.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
+        xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="800"
+        Width="750" Height="800"
+        x:Class="Yohuke.LiveMarker.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Yohuke.LiveMarker">
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="32, *, Auto">
+        <Menu>
+            <MenuItem Header="File">
+                <MenuItem Header="_Create" />
+                <Separator/>
+                <MenuItem Header="_Save" />
+                <MenuItem Header="_Load" />
+                <Separator/>
+                <MenuItem Header="_Reset Start Time"></MenuItem>
+                <Separator/>
+                <MenuItem Header="_Exit" />
+            </MenuItem>
+            <MenuItem Header="Export">
+                <MenuItem Header="To Text (.txt)" />
+                <MenuItem Header="To Excel (.xlsx)" />
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About"/>
+                <MenuItem Header="Shortcuts"/>
+            </MenuItem>
+            <TextBox/>
+        </Menu>
+        <DataGrid Margin="8" Grid.Row="1" ItemsSource="{Binding Data}"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  GridLinesVisibility="All"
+                  BorderThickness="1" BorderBrush="Gray">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="" Width="65" CanUserResize="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type models:MarkerData}">
+                            <Ellipse Fill="{Binding MarkerColor.DisplayColor}" Width="12" Height="12"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <views:ColorChoiceCombo Width="65" ShowColorName="False" SelectedColor="{Binding MarkerColor}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime}"/>
+                <DataGridTextColumn Header="Live Time" Binding="{Binding LiveTime}"/>
+                <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
+
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <Grid Grid.Row="2" ColumnDefinitions="150,*,65" Margin="8 10 8 8" VerticalAlignment="Bottom">
+            <Label VerticalAlignment="Center" Content="{Binding InputTime}"/>
+            <TextBox Text="{Binding CurrentInputMessage}" Grid.Column="1"/>
+            <views:ColorChoiceCombo Grid.Column="2" HorizontalAlignment="Stretch" SelectedColor="{Binding CurrentSelectedColor}"/>
+        </Grid>
+    </Grid>
+       
+</Window>

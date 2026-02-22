@@ -1,0 +1,9 @@
+.idea
+obj
+temp
+log
+bin
+publish
+.DS_Store
+/Resources
+*.user
