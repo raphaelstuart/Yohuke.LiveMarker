@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using YamlDotNet.Serialization;
+using Yohuke.LiveMarker.Utilities;
 
 namespace Yohuke.LiveMarker.Models;
 
@@ -12,7 +13,7 @@ public partial class LiveMarkerData : ObservableObject
 {
     [ObservableProperty]
     [property: YamlMember]
-    private DateTime startTime = DateTime.Now;
+    private DateTime startTime = DateTime.Now.TruncateMilliseconds();
 
     [ObservableProperty] [property: YamlMember]
     private ObservableCollection<MarkerData> marker = new();

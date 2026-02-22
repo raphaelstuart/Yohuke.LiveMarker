@@ -26,4 +26,24 @@ public partial class MarkerData : ObservableObject
     {
         LiveTime += newValue - oldValue;
     }
+    
+    public MarkerData CreateSnapshot()
+    {
+        return new MarkerData
+        {
+            Message = Message,
+            RealDateTime = RealDateTime,
+            MarkerColor = MarkerColor,
+            LiveTime = LiveTime
+        };
+    }
+    
+    public bool IsEqual(MarkerData other)
+    {
+        if (other == null) return false;
+        return Message == other.Message
+               && RealDateTime == other.RealDateTime
+               && MarkerColor == other.MarkerColor
+               && LiveTime == other.LiveTime;
+    }
 }

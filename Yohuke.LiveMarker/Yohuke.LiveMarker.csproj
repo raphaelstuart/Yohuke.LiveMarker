@@ -5,6 +5,8 @@
         <Nullable>disable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>LiveMarker</AssemblyName>
+        <ApplicationIcon>Assets/favicon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

@@ -54,9 +54,25 @@ public partial class MainWindow : Window
             isClosing = true;
             Close();
         }
+    }
+
+    private void DataGrid_OnBeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+    {
+        if (e.Row.DataContext is MarkerData marker)
+        {
+            ViewModel.BeginEditMarker(marker);
+        }
+    }
+
+    private void DataGrid_OnCellEditEnded(object sender, DataGridCellEditEndedEventArgs e)
+    {
+        if (e.EditAction == DataGridEditAction.Commit)
+        {
+            ViewModel.CommitEditMarker();
+        }
         else
         {
-            //ignore and keep opening
+            ViewModel.EndEditMarker();
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿using System;
+﻿// Yohuke.LiveMarker/ViewModels/MainWindowViewModel.Commands.cs
+using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
+using Yohuke.LiveMarker.Actions;
 using Yohuke.LiveMarker.Models;
 using Yohuke.LiveMarker.Utilities;
 using Yohuke.LiveMarker.Views;
@@ -11,25 +14,15 @@ namespace Yohuke.LiveMarker.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 {
-    public IAsyncRelayCommand CreateCommand { get; private set; }
-    public IAsyncRelayCommand AddMarkerCommand { get; private set; }
-    public ICommand ResetInputTimeCommand { get; private set; }
-    public ICommand ResetStartTimeCommand { get; private set; }
-    public IAsyncRelayCommand SaveCommand { get; private set; }
-    public IAsyncRelayCommand QuickSaveCommand { get; private set; }
-    public IAsyncRelayCommand LoadCommand { get; private set; }
-    public IAsyncRelayCommand ExportTextCommand { get; private set; }
-    public IAsyncRelayCommand ExportExcelCommand { get; private set; }
-    public IAsyncRelayCommand DeleteMarkerCommand { get; private set; }
-    public IAsyncRelayCommand ShowAboutCommand { get; private set; }
-
+    [RelayCommand]
     private async Task AddMarker()
     {
         if (string.IsNullOrWhiteSpace(CurrentInputMessage))
         {
             return;
         }
-        
+
+        manuallyChangingInputTime = false;
         var d = new MarkerData
         {
             Message = CurrentInputMessage,
@@ -40,12 +33,15 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
         d.PropertyChanged += OnDataPropertyChanged;
 
-        Data.Marker.Add(d);
+        var action = new AddMarkerAction(Data.Marker, d);
+        ActionManager.ExecuteAction(action);
+
         CurrentInputMessage = string.Empty;
         await AutoSave();
     }
 
-    private async Task CreateNew()
+    [RelayCommand]
+    private async Task Create()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
             View, "Create", "yaml",
@@ -53,29 +49,31 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
         if (!string.IsNullOrEmpty(path))
         {
-            Data = new LiveMarkerData
-            {
-                StartTime = DateTime.Now
-            };
-            CurrentInputMessage = string.Empty;
-            CurrentFileLocation = string.Empty;
-
-            await SaveInternal(path);
+            await CreateInternal(path);
         }
     }
     
+    [RelayCommand]
     private void ResetInputTime()
     {
+        manuallyChangingInputTime = true;
         InputTime = DateTime.Now;
     }
-
-    private void ResetStartTime()
+    
+    [RelayCommand]
+    private async Task ResetStartTime()
     {
-        Data.StartTime = DateTime.Now;
-        Data.CalculateLiveTime();
-    }
+        var box = MessageBoxManager.GetMessageBoxStandard("Reset Start Time", "Are you sure you want to reset the start time? This will recalculate the live time for all markers.", ButtonEnum.YesNo);
 
-    private async Task SaveAsync()
+        if (await box.ShowAsPopupAsync(View) == ButtonResult.Yes)
+        {
+            Data.StartTime = DateTime.Now;
+            Data.CalculateLiveTime();
+        }
+    }
+    
+    [RelayCommand]
+    private async Task Save()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
             View, "Save markers", "yaml",
@@ -86,8 +84,9 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
             await SaveInternal(path);
         }
     }
-
-    private async Task LoadAsync()
+    
+    [RelayCommand]
+    private async Task Load()
     {
         var path = await StoragePickerUtilities.PickOpenFileAsync(
             View, "Load markers",
@@ -99,19 +98,21 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         }
     }
     
-    private async Task QuickSaveAsync()
+    [RelayCommand]
+    private async Task QuickSave()
     {
         if (string.IsNullOrWhiteSpace(CurrentFileLocation))
         {
-            await SaveAsync();
+            await Save();
         }
         else
         {
             await SaveInternal(CurrentFileLocation);
         }
     }
-
-    private async Task ExportTextAsync()
+    
+    [RelayCommand]
+    private async Task ExportText()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
             View, "Export as Text", "txt",
@@ -122,8 +123,9 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
             await ExportInternal(true, path);
         }
     }
-
-    private async Task ExportExcelAsync()
+    
+    [RelayCommand]
+    private async Task ExportExcel()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
             View, "Export as Excel", "xlsx",
@@ -134,36 +136,81 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
             await ExportInternal(false, path);
         }
     }
-
+    
+    [RelayCommand]
     private async Task DeleteMarker(MarkerData marker)
     {
         if (marker != null)
         {
             marker.PropertyChanged -= OnDataPropertyChanged;
-            Data.Marker.Remove(marker);
+
+            var action = new DeleteMarkerAction(Data.Marker, marker);
+            ActionManager.ExecuteAction(action);
 
             await AutoSave();
         }
     }
+    
+    [RelayCommand]
+    private async Task Undo()
+    {
+        if (!ActionManager.CanUndo) return;
 
+        isActionInprogress = true;
+        try
+        {
+            ActionManager.Undo();
+            Data.CalculateLiveTime();
+            await AutoSave();
+        }
+        finally
+        {
+            isActionInprogress = false;
+        }
+    }
+    
+    [RelayCommand]
+    private async Task Redo()
+    {
+        if (!ActionManager.CanRedo) return;
+
+        isActionInprogress = true;
+        try
+        {
+            ActionManager.Redo();
+            Data.CalculateLiveTime();
+            await AutoSave();
+        }
+        finally
+        {
+            isActionInprogress = false;
+        }
+    }
+    
+    [RelayCommand]
     private async Task ShowAbout()
     {
-        var box = MessageBoxManager.GetMessageBoxStandard("About", $"By 夜更けのシンフォニー(yosymph.com)\nVersion: {GetType().Assembly.GetName().Version}\nOpen source under GPLv3 License.");
+        var box = MessageBoxManager.GetMessageBoxStandard("About",
+            $"By 夜更けのシンフォニー(yosymph.com)\nVersion: {GetType().Assembly.GetName().Version}\nOpen source under GPLv3 License.");
         await box.ShowAsPopupAsync(View);
     }
     
-    private void BindCommands()
+    [RelayCommand]
+    private void SelectColor(string parameter)
     {
-        CreateCommand = new AsyncRelayCommand(CreateNew);
-        AddMarkerCommand = new AsyncRelayCommand(AddMarker);
-        ResetInputTimeCommand = new RelayCommand(ResetInputTime);
-        ResetStartTimeCommand = new RelayCommand(ResetStartTime);
-        SaveCommand = new AsyncRelayCommand(SaveAsync);
-        QuickSaveCommand = new AsyncRelayCommand(QuickSaveAsync);
-        LoadCommand = new AsyncRelayCommand(LoadAsync);
-        ExportTextCommand = new AsyncRelayCommand(ExportTextAsync);
-        ExportExcelCommand = new AsyncRelayCommand(ExportExcelAsync);
-        DeleteMarkerCommand = new AsyncRelayCommand<MarkerData>(DeleteMarker);
-        ShowAboutCommand = new AsyncRelayCommand(ShowAbout);
+        if (int.TryParse(parameter, out var index) && index >= 1 && index <= 7)
+        {
+            var colors = Enum.GetValues<MarkerColor>();
+            if (index <= colors.Length)
+            {
+                CurrentSelectedColor = colors[index - 1];
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void Exit()
+    {
+        View.Close();
     }
 }
