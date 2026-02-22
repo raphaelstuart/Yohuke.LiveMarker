@@ -67,10 +67,11 @@ public class ExcelExporter : IMarkerExporter
                 return style;
             }
 
-            for (var row = 0; row < data.Marker.Count; row++)
+            var ordered = data.Marker.OrderBy(m => m.RealDateTime).ToList();
+            for (var row = 0; row < ordered.Count; row++)
             {
                 var dataRow = sheet.CreateRow(row + 1);
-                var marker = data.Marker[row];
+                var marker = ordered[row];
                 var rowStyle = GetRowStyle(marker.MarkerColor);
 
                 for (var col = 0; col < properties.Length; col++)

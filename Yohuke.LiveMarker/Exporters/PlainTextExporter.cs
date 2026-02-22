@@ -20,7 +20,7 @@ public class PlainTextExporter : IMarkerExporter
 
         lines.Add(string.Join("\t", properties.Select(p => p.Name)));
 
-        foreach (var marker in data.Marker)
+        foreach (var marker in data.Marker.OrderBy(m => m.RealDateTime))
         {
             var values = properties.Select(p =>
             {
