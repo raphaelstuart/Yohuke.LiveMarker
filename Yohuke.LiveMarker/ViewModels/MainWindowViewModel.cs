@@ -1,28 +1,104 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using MsBox.Avalonia;
+using Yohuke.LiveMarker.Exporters;
 using Yohuke.LiveMarker.Models;
+using Yohuke.LiveMarker.Utilities;
 using Yohuke.LiveMarker.Views;
 
 namespace Yohuke.LiveMarker.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 {
-    public ObservableCollection<MarkerData> Data { get; set; } = new();
+    [ObservableProperty] private LiveMarkerData data;
+    [ObservableProperty] private MarkerColor currentSelectedColor = MarkerColorUtilities.DefaultColor.Color;
+    [ObservableProperty] private string currentInputMessage;
+    [ObservableProperty] private DateTime inputTime = DateTime.Now;
+    [ObservableProperty] private bool isLoading = false;
 
-    public MarkerColorDefinition CurrentSelectedColor { get; set; } = ColorChoiceCombo.ColorChoices[3];
-    public string CurrentInputMessage { get; set; }
-    public DateTime InputTime { get; set; } = DateTime.Now;
+    private string CurrentFileLocation { get; set; }
+
+    private async Task ShowErrorAsync(string message)
+    {
+        var box = MessageBoxManager.GetMessageBoxStandard("Error", message);
+        await box.ShowAsPopupAsync(View);
+    }
     
+    partial void OnCurrentInputMessageChanged(string oldValue, string newValue)
+    {
+        if (string.IsNullOrWhiteSpace(oldValue) && !string.IsNullOrWhiteSpace(newValue))
+        {
+            ResetInputTime();
+        }
+    }
+
+    private async Task SaveInternal(string path)
+    {
+        IsLoading = true;
+        
+        try
+        {
+            await Data.Save(path);
+            CurrentFileLocation = path;
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorAsync($"Failed to save: {ex.Message}");
+        }
+
+        IsLoading = false;
+    }
+    
+    private async Task LoadInternal(string path)
+    {
+        IsLoading = true;
+
+        try
+        {
+            var d = await LiveMarkerData.Load(path);
+            CurrentFileLocation = path;
+            
+            if (d == null)
+            {
+                await ShowErrorAsync("File failed to load.");
+                return;
+            }
+
+            Data = d;
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorAsync($"Failed to load: {ex.Message}");
+        }
+        
+        IsLoading = false;
+    }
+
+    private async Task ExportInternal(bool isText, string path)
+    {
+        IsLoading = true;
+        
+        try
+        {
+            IMarkerExporter exporter = isText ? new PlainTextExporter() : new ExcelExporter();
+            await exporter.Export(Data, path);
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorAsync($"Failed to export: {ex.Message}");
+        }
+        
+        IsLoading = false;
+    }
+    
+    public MainWindowViewModel(MainWindow window) : base(window)
+    {
+        Data = new();
+        BindCommands();
+    }
+
     public MainWindowViewModel()
     {
-        CurrentInputMessage = "Hello";
-        Data.Add(new MarkerData
-        {
-            RealDateTime = DateTime.Now,
-            LiveTime = TimeSpan.FromSeconds(2421),
-            Message = "Hello, World!",
-            MarkerColor = ColorChoiceCombo.ColorChoices.FirstOrDefault()
-        });
     }
 }

@@ -1,71 +1,102 @@
-<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui" x:Name="Root"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Yohuke.LiveMarker.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
         xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
+        xmlns:converters="clr-namespace:Yohuke.LiveMarker.Converters"
         mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="800"
-        Width="750" Height="800"
+        Width="750" Height="800" WindowStartupLocation="CenterScreen"
         x:Class="Yohuke.LiveMarker.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Yohuke.LiveMarker">
+        Title="Live Marker">
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
-    <Grid RowDefinitions="32, *, Auto">
-        <Menu>
-            <MenuItem Header="File">
-                <MenuItem Header="_Create" />
-                <Separator/>
-                <MenuItem Header="_Save" />
-                <MenuItem Header="_Load" />
-                <Separator/>
-                <MenuItem Header="_Reset Start Time"></MenuItem>
-                <Separator/>
-                <MenuItem Header="_Exit" />
-            </MenuItem>
-            <MenuItem Header="Export">
-                <MenuItem Header="To Text (.txt)" />
-                <MenuItem Header="To Excel (.xlsx)" />
-            </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem Header="About"/>
-                <MenuItem Header="Shortcuts"/>
-            </MenuItem>
-            <TextBox/>
-        </Menu>
-        <DataGrid Margin="8" Grid.Row="1" ItemsSource="{Binding Data}"
-                  CanUserReorderColumns="True"
+    <Window.Resources>
+        <converters:LiveTimeMultiConverter x:Key="LiveTimeMultiConverter"/>
+        <converters:MarkerColorToBrushConverter x:Key="MarkerColorToBrushConverter"/>
+        <converters:MarkerColorToDefinitionConverter x:Key="MarkerColorToDefinitionConverter"/>
+    </Window.Resources>
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Enter" Command="{Binding AddMarkerCommand}"/>
+        <KeyBinding Gesture="Escape" Command="{Binding ResetInputTimeCommand}"/>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}"/>
+    </Window.KeyBindings>
+    <Grid RowDefinitions="32, *, 48">
+        <Grid Grid.Row="0" ColumnDefinitions="*, 220" Margin="8 8 8 0">
+            <Menu Grid.Column="0">
+                <MenuItem Header="File">
+                    <MenuItem Header="_Create" Command="{Binding CreateCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="_Save" Command="{Binding SaveCommand}"/>
+                    <MenuItem Header="_Load" Command="{Binding LoadCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="_Reset Start Time" Command="{Binding ResetStartTimeCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="_Exit" />
+                </MenuItem>
+                <MenuItem Header="Export">
+                    <MenuItem Header="To Text (.txt)" Command="{Binding ExportTextCommand}" />
+                    <MenuItem Header="To Excel (.xlsx)" Command="{Binding ExportExcelCommand}"/>
+                </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem Header="_About"/>
+                    <MenuItem Header="_Shortcuts"/>
+                </MenuItem>
+            </Menu>    
+            <TextBox Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding Data.StartTime}"/>
+        </Grid>
+        <DataGrid Margin="8" Grid.Row="1" ItemsSource="{Binding Data.Marker}"
+                  CanUserReorderColumns="False"
                   CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
                   GridLinesVisibility="All"
-                  BorderThickness="1" BorderBrush="Gray">
+                  BorderThickness="1" BorderBrush="{StaticResource ComboBoxBorderBrush}"
+                  KeyDown="MarkerDataGrid_OnKeyDown">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="" Width="65" CanUserResize="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="{x:Type models:MarkerData}">
-                            <Ellipse Fill="{Binding MarkerColor.DisplayColor}" Width="12" Height="12"/>
+                            <Ellipse Fill="{Binding MarkerColor, Converter={StaticResource MarkerColorToBrushConverter}}" Width="12" Height="12"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <views:ColorChoiceCombo Width="65" ShowColorName="False" SelectedColor="{Binding MarkerColor}"/>
+                            <views:ColorChoiceCombo Width="65" ShowColorName="False" 
+                                                    SelectedColor="{Binding MarkerColor, 
+                                                    Converter={StaticResource MarkerColorToDefinitionConverter},
+                                                    Mode=TwoWay}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime}"/>
-                <DataGridTextColumn Header="Live Time" Binding="{Binding LiveTime}"/>
+                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime, Mode=TwoWay}"/>
+                <DataGridTextColumn Header="Live Time" Binding="{Binding LiveTime, Mode=TwoWay}" IsReadOnly="True">
+                   <!-- <DataGridTextColumn.Binding> -->
+                   <!--     <MultiBinding Converter="{StaticResource LiveTimeMultiConverter}"> -->
+                   <!--         <Binding Path="RealDateTime" Mode="TwoWay"/> -->
+                   <!--         <Binding Path="#Root.ViewModel.StartTime" Mode="TwoWay"/> -->
+                   <!--     </MultiBinding> -->
+                   <!-- </DataGridTextColumn.Binding>  -->
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
-
             </DataGrid.Columns>
         </DataGrid>
         
-        <Grid Grid.Row="2" ColumnDefinitions="150,*,65" Margin="8 10 8 8" VerticalAlignment="Bottom">
-            <Label VerticalAlignment="Center" Content="{Binding InputTime}"/>
-            <TextBox Text="{Binding CurrentInputMessage}" Grid.Column="1"/>
-            <views:ColorChoiceCombo Grid.Column="2" HorizontalAlignment="Stretch" SelectedColor="{Binding CurrentSelectedColor}"/>
+        <Grid Grid.Row="2" ColumnDefinitions="150,*,65" Margin="8 4 8 8" VerticalAlignment="Stretch">
+            <Label VerticalAlignment="Center" Content="{Binding InputTime, Mode=TwoWay}"/>
+            <TextBox VerticalContentAlignment="Center" Text="{Binding CurrentInputMessage, Mode=TwoWay}" Grid.Column="1"/>
+            <views:ColorChoiceCombo Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    SelectedColor="{Binding CurrentSelectedColor, Converter={StaticResource MarkerColorToDefinitionConverter}, Mode=TwoWay}"/>
+        </Grid>
+        
+        <Grid Grid.ColumnSpan="2" Grid.RowSpan="3" Background="#80000000" IsVisible="{Binding IsLoading}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="20"/>
+                <TextBlock Text="Please Wait..." Foreground="White" HorizontalAlignment="Center" Margin="0 8 0 0"/>
+            </StackPanel>
         </Grid>
     </Grid>
        

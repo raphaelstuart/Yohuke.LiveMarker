@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
              xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
+             xmlns:utilities="clr-namespace:Yohuke.LiveMarker.Utilities"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Yohuke.LiveMarker.Views.ColorChoiceCombo">
     <ComboBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
-              ItemsSource="{Binding ColorChoices, RelativeSource={RelativeSource AncestorType=views:ColorChoiceCombo}}"
+              ItemsSource="{x:Static utilities:MarkerColorUtilities.ColorChoices}"
               SelectedItem="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=views:ColorChoiceCombo}, Mode=TwoWay}">
         <ComboBox.ItemTemplate>
             <DataTemplate DataType="{x:Type models:MarkerColorDefinition}">
