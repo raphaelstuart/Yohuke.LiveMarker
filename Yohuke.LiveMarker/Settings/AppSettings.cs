@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 using Yohuke.LiveMarker.Utilities;
 

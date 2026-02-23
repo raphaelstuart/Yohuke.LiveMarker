@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 using Yohuke.LiveMarker.Utilities;
 
 namespace Yohuke.LiveMarker.Settings;
@@ -15,7 +16,7 @@ public class LocalCache
         try
         {
             var data = File.ReadAllText(PathUtilities.LocalCachePath);
-            cache = JsonConvert.DeserializeObject<Dictionary<string, string>>(data);
+            cache = new Deserializer().Deserialize<Dictionary<string, string>>(data);
         }
         catch
         {
@@ -30,7 +31,7 @@ public class LocalCache
         {
             if (cache.TryGetValue(key, out var val))
             {
-                return JsonConvert.DeserializeObject<T>(val);
+                return new Deserializer().Deserialize<T>(val);
             }
         }
         catch (Exception e)
@@ -99,13 +100,13 @@ public class LocalCache
     
     public void SetObject<T>(string key, T value) where T: new()
     {
-        cache[key] = JsonConvert.SerializeObject(value);
+        cache[key] = new Serializer().Serialize(value);
         Save();
     }
 
     public void SetFloat(string key, float value)
     {
-        cache[key] = value.ToString();
+        cache[key] = value.ToString(CultureInfo.InvariantCulture);
         Save();
     }
 
@@ -129,6 +130,6 @@ public class LocalCache
 
     public void Save()
     {
-        File.WriteAllText(PathUtilities.LocalCachePath, JsonConvert.SerializeObject(cache));
+        File.WriteAllText(PathUtilities.LocalCachePath, new Serializer().Serialize(cache));
     }
 }
