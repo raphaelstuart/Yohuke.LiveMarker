@@ -43,7 +43,7 @@ public partial class MainWindow : Window
             "Do you want to save before exiting?",
             ButtonEnum.YesNoCancel);
         
-        var result = await box.ShowAsPopupAsync(this);
+        var result = await box.ShowWindowDialogAsync(this);
 
         if (result == ButtonResult.Yes)
         {

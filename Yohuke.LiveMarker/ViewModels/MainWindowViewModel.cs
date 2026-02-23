@@ -1,15 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Collections;
-using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MsBox.Avalonia;
 using Yohuke.LiveMarker.Actions;
 using Yohuke.LiveMarker.Exporters;
 using Yohuke.LiveMarker.Models;
-using Yohuke.LiveMarker.Settings;
 using Yohuke.LiveMarker.Utilities;
 using Yohuke.LiveMarker.Views;
 
@@ -50,7 +47,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private async Task ShowErrorAsync(string message)
     {
         var box = MessageBoxManager.GetMessageBoxStandard("Error", message);
-        await box.ShowAsPopupAsync(View);
+        await box.ShowWindowDialogAsync(View);
     }
 
     private bool isApplyingParsedTime;

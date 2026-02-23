@@ -89,7 +89,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     {
         var box = MessageBoxManager.GetMessageBoxStandard("Reset Start Time", "Are you sure you want to reset the start time? This will recalculate the live time for all markers.", ButtonEnum.YesNo);
 
-        if (await box.ShowAsPopupAsync(View) == ButtonResult.Yes)
+        if (await box.ShowWindowDialogAsync(View) == ButtonResult.Yes)
         {
             Data.StartTime = DateTime.Now;
             Data.CalculateLiveTime();
@@ -216,7 +216,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     {
         var box = MessageBoxManager.GetMessageBoxStandard("About",
             $"By 夜更けのシンフォニー(yosymph.com)\nVersion: {GetType().Assembly.GetName().Version}\nOpen source under GPLv3 License.");
-        await box.ShowAsPopupAsync(View);
+        await box.ShowWindowDialogAsync(View);
     }
     
     [RelayCommand]
