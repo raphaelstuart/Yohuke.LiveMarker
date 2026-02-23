@@ -1,3 +1,5 @@
+#nullable enable
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using MsBox.Avalonia;
@@ -5,7 +7,7 @@ using MsBox.Avalonia.Enums;
 using Yohuke.LiveMarker.Models;
 using Yohuke.LiveMarker.ViewModels;
 
-namespace Yohuke.LiveMarker.Views;
+namespace Yohuke.LiveMarker.Views.Windows;
 
 public partial class MainWindow : Window
 {
@@ -15,7 +17,6 @@ public partial class MainWindow : Window
         ViewModel = new MainWindowViewModel(this);
         InitializeComponent();
         
-        ViewModel.SetGridSortOrder();
         ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.PreferSystemChrome;
     }
     
@@ -31,7 +32,7 @@ public partial class MainWindow : Window
     private bool isClosing;
     protected override async void OnClosing(WindowClosingEventArgs e)
     {
-        if (isClosing || !string.IsNullOrWhiteSpace(ViewModel.CurrentFileLocation))
+        if (isClosing || ViewModel.Data == null || AppRuntime.Settings.EnableAutoSave || !string.IsNullOrWhiteSpace(ViewModel.CurrentFileLocation))
         {
             return;
         }
@@ -39,8 +40,8 @@ public partial class MainWindow : Window
         e.Cancel = true;
 
         var box = MessageBoxManager.GetMessageBoxStandard(
-            "Exit",
-            "Do you want to save before exiting?",
+            AppRuntime.I18N.GetText("Dialog_Exit"),
+            AppRuntime.I18N.GetText("Dialog_Exit_Message"),
             ButtonEnum.YesNoCancel);
         
         var result = await box.ShowWindowDialogAsync(this);
@@ -77,4 +78,36 @@ public partial class MainWindow : Window
             ViewModel.EndEditMarker();
         }
     }
+
+    #region DragMove
+    // Solution From: https://github.com/AvaloniaUI/Avalonia/discussions/8441
+    private bool _isWindowDragInEffect = false;
+    private Point _cursorPositionAtWindowDragStart = new(0, 0);
+
+    private void DragMove_OnPointerMoved(object sender, PointerEventArgs e)
+    {
+        if (_isWindowDragInEffect)
+        {
+            var currentCursorPosition = e.GetPosition(this);
+            var cursorPositionDelta = currentCursorPosition - _cursorPositionAtWindowDragStart;
+
+            Position = this.PointToScreen(cursorPositionDelta);
+        }
+    }
+    
+    private void DragMove_OnPointerPressed(object sender, PointerPressedEventArgs e)
+    {
+        if (e.Source is Control sourceControl)
+        {
+            _isWindowDragInEffect = true;
+            _cursorPositionAtWindowDragStart = e.GetPosition(this);
+        }
+    }
+    
+    private void DragMove_OnPointerReleased(object sender, PointerReleasedEventArgs e)
+    {
+        _isWindowDragInEffect = false;
+    }
+
+    #endregion
 }

@@ -8,35 +8,26 @@ using Yohuke.LiveMarker.Actions;
 using Yohuke.LiveMarker.Exporters;
 using Yohuke.LiveMarker.Models;
 using Yohuke.LiveMarker.Utilities;
-using Yohuke.LiveMarker.Views;
+using MainWindow = Yohuke.LiveMarker.Views.Windows.MainWindow;
 
 namespace Yohuke.LiveMarker.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 {
+    public ActionManager ActionManager { get; } = new();
+    
     [ObservableProperty] private LiveMarkerData data;
     [ObservableProperty] private MarkerColor currentSelectedColor = MarkerColorUtilities.DefaultColor.Color;
     [ObservableProperty] private string currentInputMessage;
     [ObservableProperty] private DateTime inputRealTime = DateTime.Now;
     [ObservableProperty] private TimeSpan inputLiveTime = new (0, 0, 0);
-    [ObservableProperty] private bool isLoading = false;
+    [ObservableProperty] private bool isLoading;
     [ObservableProperty] private string currentFileLocation;
     [ObservableProperty] private bool useInputRealTime = true;
-
-    partial void OnUseInputRealTimeChanged(bool value)
-    {
-        OnPropertyChanged(nameof(UseInputLiveTime));
-    }
-
-    public bool UseInputLiveTime
-    {
-        get => !UseInputRealTime;
-        set => UseInputRealTime = !value;
-    }
-
+    
     [ObservableProperty] private bool showDateTimeColumn = AppRuntime.Settings?.ShowDateTimeColumn ?? true;
-
-    public ActionManager ActionManager { get; } = new();
+    
+    public bool FileLinked => !string.IsNullOrWhiteSpace(CurrentFileLocation);
 
     private MarkerData editingSnapshot;
     private MarkerData editingMarker;
@@ -44,9 +35,14 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private bool isEditing;
     private bool lockingInputTime;
 
+    partial void OnCurrentFileLocationChanged(string value)
+    {
+        OnPropertyChanged(nameof(FileLinked));
+    }
+
     private async Task ShowErrorAsync(string message)
     {
-        var box = MessageBoxManager.GetMessageBoxStandard("Error", message);
+        var box = MessageBoxManager.GetMessageBoxStandard(AppRuntime.I18N.GetText("Dialog_Error_Title"), message);
         await box.ShowWindowDialogAsync(View);
     }
 
@@ -54,7 +50,6 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
     partial void OnCurrentInputMessageChanged(string oldValue, string newValue)
     {
-        // Auto-detect time pattern at the beginning of input and apply as LiveTime
         if (!isApplyingParsedTime &&
             !string.IsNullOrWhiteSpace(newValue) &&
             TimeUtilities.TryParseFlexibleTime(newValue, out var parsedTime, out var remaining))
@@ -141,7 +136,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         }
         catch (Exception ex)
         {
-            await ShowErrorAsync($"Failed to save: {ex.Message}");
+            await ShowErrorAsync(string.Format(AppRuntime.I18N.GetText("Dialog_Error_SaveFailed"), ex.Message));
         }
 
         IsLoading = false;
@@ -157,7 +152,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
             if (d == null)
             {
-                await ShowErrorAsync("File failed to load.");
+                await ShowErrorAsync(AppRuntime.I18N.GetText("Dialog_Error_LoadFailed"));
                 return;
             }
 
@@ -173,7 +168,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         }
         catch (Exception ex)
         {
-            await ShowErrorAsync($"Failed to load: {ex.Message}");
+            await ShowErrorAsync(string.Format(AppRuntime.I18N.GetText("Dialog_Error_LoadFailed_Detail"), ex.Message));
         }
         
         IsLoading = false;
@@ -194,6 +189,12 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
     public void SetGridSortOrder()
     {
+        
+        if (Data == null)
+        {
+            return;
+        }
+        
         var view = new DataGridCollectionView(Data.Marker);
         view.SortDescriptions.Add(DataGridSortDescription.FromPath(nameof(MarkerData.RealDateTime)));
 
@@ -211,19 +212,13 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         }
         catch (Exception ex)
         {
-            await ShowErrorAsync($"Failed to export: {ex.Message}");
+            await ShowErrorAsync(string.Format(AppRuntime.I18N.GetText("Dialog_Error_ExportFailed"), ex.Message));
         }
 
         IsLoading = false;
     }
 
-    public MainWindowViewModel(MainWindow window) : base(window)
-    {
-        Data = new()
-        {
-            StartTime = DateTime.Now.TruncateMilliseconds()
-        };
-    }
+    public MainWindowViewModel(MainWindow window) : base(window) { }
 
     public MainWindowViewModel() { }
 }

@@ -3,10 +3,12 @@ using Avalonia.Media;
 
 namespace Yohuke.LiveMarker.Models;
 
-public struct MarkerColorDefinition(MarkerColor color, IBrush displayColor) : IEquatable<MarkerColorDefinition>
+public readonly struct MarkerColorDefinition(MarkerColor color, IBrush displayColor) : IEquatable<MarkerColorDefinition>
 {
     public MarkerColor Color { get; } = color;
     public IBrush DisplayColor { get; } = displayColor;
+    
+    public string Name => AppRuntime.I18N.GetText($"Color_{Color}");
 
     public bool Equals(MarkerColorDefinition other)
     {

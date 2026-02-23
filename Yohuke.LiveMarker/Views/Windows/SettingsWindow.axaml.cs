@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Yohuke.LiveMarker.ViewModels;
 
-namespace Yohuke.LiveMarker.Views;
+namespace Yohuke.LiveMarker.Views.Windows;
 
 public partial class SettingsWindow : Window
 {

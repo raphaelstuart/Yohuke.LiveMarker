@@ -17,6 +17,10 @@ public partial class AppSettings : ObservableObject
     [field:YamlMember]
     private bool showDateTimeColumn = true;
     
+    [ObservableProperty]
+    [field:YamlMember]
+    private string language = "en";
+    
     public static async Task<AppSettings> Load()
     {
         try

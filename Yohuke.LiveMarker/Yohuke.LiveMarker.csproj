@@ -14,6 +14,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="I18n\*.yml"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.3.12"/>
         <PackageReference Include="Avalonia.Desktop" Version="11.3.12"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12"/>
@@ -25,10 +29,26 @@
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1"/>
         <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0" />
-        <PackageReference Include="FluentIcons.Avalonia" Version="2.0.319" />
         <PackageReference Include="MessageBox.Avalonia" Version="3.3.1.1" />
         <PackageReference Include="MessageBox.Avalonia.Markdown" Version="3.2.0" />
         <PackageReference Include="NPOI" Version="2.7.5" />
+        <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.6.2" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.6.2" />
         <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\Components\ColorChoiceCombo.axaml.cs">
+        <DependentUpon>ColorChoiceCombo.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\Windows\MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\Windows\SettingsWindow.axaml.cs">
+        <DependentUpon>SettingsWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 </Project>

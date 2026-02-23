@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Yohuke.LiveMarker.ViewModels;

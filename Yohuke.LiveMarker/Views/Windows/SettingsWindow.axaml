@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Yohuke.LiveMarker.ViewModels"
+        xmlns:i18n="clr-namespace:Yohuke.LiveMarker.I18n"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+        x:Class="Yohuke.LiveMarker.Views.Windows.SettingsWindow"
+        x:DataType="vm:SettingsWindowViewModel"
+        Title="{i18n:I18n Settings_Title}" Width="400"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <Design.DataContext>
+        <vm:SettingsWindowViewModel/>
+    </Design.DataContext>
+
+    <StackPanel Margin="24" Spacing="16">
+        <StackPanel Spacing="12">
+            <CheckBox Content="{i18n:I18n Settings_EnableAutoSave}" IsChecked="{Binding EnableAutoSave}"/>
+            <CheckBox Content="{i18n:I18n Settings_ShowDateTimeColumn}" IsChecked="{Binding ShowDateTimeColumn}"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{i18n:I18n Settings_Language}" VerticalAlignment="Center"/>
+                <ComboBox ItemsSource="{Binding Languages}" 
+                          SelectedValue="{Binding SelectedLanguage}" 
+                          SelectedValueBinding="{Binding Code}"
+                          Width="150"/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Spacing="8" Margin="0 16 0 0">
+            <Button Content="{i18n:I18n Settings_Save}" Command="{Binding SaveCommand}" Width="80" HorizontalContentAlignment="Center"/>
+            <Button Content="{i18n:I18n Settings_Cancel}" Command="{Binding CancelCommand}" Width="80" HorizontalContentAlignment="Center"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

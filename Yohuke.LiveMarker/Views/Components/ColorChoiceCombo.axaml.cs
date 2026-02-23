@@ -1,13 +1,9 @@
-using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Media;
 using Yohuke.LiveMarker.Models;
-using Yohuke.LiveMarker.Utilities;
 
-namespace Yohuke.LiveMarker.Views;
+namespace Yohuke.LiveMarker.Views.Components;
 
 public partial class ColorChoiceCombo : UserControl
 {

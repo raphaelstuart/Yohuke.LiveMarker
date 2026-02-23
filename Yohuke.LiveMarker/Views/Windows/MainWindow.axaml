@@ -4,13 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
-        xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
         xmlns:converters="clr-namespace:Yohuke.LiveMarker.Converters"
-        xmlns:markup="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
-        xmlns:liveMarker="clr-namespace:Yohuke.LiveMarker"
-        x:Class="Yohuke.LiveMarker.Views.MainWindow"
+        xmlns:l="clr-namespace:Yohuke.LiveMarker.I18n"
+        xmlns:components="clr-namespace:Yohuke.LiveMarker.Views.Components"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        x:Class="Yohuke.LiveMarker.Views.Windows.MainWindow"
         x:DataType="vm:MainWindowViewModel" MinHeight="92" MinWidth="600"
-        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="800" Width="750" Height="800" 
+        mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="750" Width="850" Height="750" 
         WindowStartupLocation="CenterScreen" Icon="/Assets/favicon.ico" Title="Live Marker"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="PreferSystemChrome"
@@ -52,72 +52,72 @@
     <Grid RowDefinitions="Auto, *, 48">
         <Grid Grid.Row="0" ColumnDefinitions="Auto, 220" Margin="8 0 8 0">
             <Menu Grid.Column="0" Margin="{OnPlatform 0, macOS=72 0 0 0}">
-                <MenuItem Header="File">
-                    <MenuItem Header="_Create" Command="{Binding CreateCommand}" InputGesture="{OnPlatform Ctrl+N, macOS=cmd+N}"/>
+                <MenuItem Header="{l:I18n Menu_File}">
+                    <MenuItem Header="{l:I18n Menu_File_Create}" i:MenuItem.Icon="mdi-file-plus" Command="{Binding CreateCommand}" InputGesture="{OnPlatform Ctrl+N, macOS=cmd+N}"/>
                     <Separator/>
-                    <MenuItem Header="_Open" Command="{Binding LoadCommand}" InputGesture="{OnPlatform Ctrl+O, macOS=cmd+O}"/>
-                    <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGesture="{OnPlatform Ctrl+S, macOS=cmd+S}"/>
-                    <MenuItem Header="_Save As" Command="{Binding SaveAsCommand}" InputGesture="{OnPlatform Shift+Ctrl+S, macOS=Shift+cmd+S}"/>
+                    <MenuItem Header="{l:I18n Menu_File_Open}" i:MenuItem.Icon="mdi-file" Command="{Binding LoadCommand}" InputGesture="{OnPlatform Ctrl+O, macOS=cmd+O}"/>
+                    <MenuItem Header="{l:I18n Menu_File_Save}" i:MenuItem.Icon="mdi-content-save" Command="{Binding SaveCommand}" InputGesture="{OnPlatform Ctrl+S, macOS=cmd+S}"/>
+                    <MenuItem Header="{l:I18n Menu_File_SaveAs}" Command="{Binding SaveAsCommand}" InputGesture="{OnPlatform Shift+Ctrl+S, macOS=Shift+cmd+S}"/>
                     <Separator/>
-                    <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}" InputGesture="{OnPlatform Shift+Ctrl+P, macOS=Shift+cmd+P}"/>
+                    <MenuItem Header="{l:I18n Menu_File_Settings}" i:MenuItem.Icon="mdi-cog" Command="{Binding OpenSettingsCommand}" InputGesture="{OnPlatform Shift+Ctrl+P, macOS=Shift+cmd+P}"/>
                     <Separator/>
-                    <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+                    <MenuItem Header="{l:I18n Menu_File_Exit}" i:MenuItem.Icon="mdi-close-thick" Command="{Binding ExitCommand}" />
                 </MenuItem>
-                <MenuItem Header="Edit">
-                    <MenuItem Header="Switch Color">
-                        <MenuItem Header="_Red" Command="{Binding SelectColorCommand}" CommandParameter="1" InputGesture="{OnPlatform Ctrl+D1, macOS=cmd+D1}">
+                <MenuItem Header="{l:I18n Menu_Edit}">
+                    <MenuItem Header="{l:I18n Menu_Edit_SwitchColor}" i:MenuItem.Icon="mdi-palette">
+                        <MenuItem Header="{l:I18n Color_Red}" Command="{Binding SelectColorCommand}" CommandParameter="1" InputGesture="{OnPlatform Ctrl+D1, macOS=cmd+D1}">
                             <MenuItem.Icon>
                                 <Ellipse Width="12" Height="12" Fill="Tomato"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="_Orange" Command="{Binding SelectColorCommand}" CommandParameter="2" InputGesture="{OnPlatform Ctrl+D2, macOS=cmd+D2}">
+                        <MenuItem Header="{l:I18n Color_Orange}" Command="{Binding SelectColorCommand}" CommandParameter="2" InputGesture="{OnPlatform Ctrl+D2, macOS=cmd+D2}">
                             <MenuItem.Icon>
                                 <Ellipse Width="12" Height="12" Fill="Orange"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="_Yellow" Command="{Binding SelectColorCommand}" CommandParameter="3" InputGesture="{OnPlatform Ctrl+D3, macOS=cmd+D3}">
+                        <MenuItem Header="{l:I18n Color_Yellow}" Command="{Binding SelectColorCommand}" CommandParameter="3" InputGesture="{OnPlatform Ctrl+D3, macOS=cmd+D3}">
                             <MenuItem.Icon>
                                 <Ellipse Width="12" Height="12" Fill="Yellow"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="_Green" Command="{Binding SelectColorCommand}" CommandParameter="4" InputGesture="{OnPlatform Ctrl+D4, macOS=cmd+D4}">
+                        <MenuItem Header="{l:I18n Color_Green}" Command="{Binding SelectColorCommand}" CommandParameter="4" InputGesture="{OnPlatform Ctrl+D4, macOS=cmd+D4}">
                             <MenuItem.Icon>
                                 <Ellipse Width="12" Height="12" Fill="LawnGreen"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="_Blue" Command="{Binding SelectColorCommand}" CommandParameter="5" InputGesture="{OnPlatform Ctrl+D5, macOS=cmd+D5}">
+                        <MenuItem Header="{l:I18n Color_Blue}" Command="{Binding SelectColorCommand}" CommandParameter="5" InputGesture="{OnPlatform Ctrl+D5, macOS=cmd+D5}">
                             <MenuItem.Icon>
                                 <Ellipse Width="12" Height="12" Fill="DodgerBlue"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="_Magenta" Command="{Binding SelectColorCommand}" CommandParameter="6" InputGesture="{OnPlatform Ctrl+D6, macOS=cmd+D6}">
+                        <MenuItem Header="{l:I18n Color_Magenta}" Command="{Binding SelectColorCommand}" CommandParameter="6" InputGesture="{OnPlatform Ctrl+D6, macOS=cmd+D6}">
                             <MenuItem.Icon>
                                 <Ellipse Width="12" Height="12" Fill="Violet"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="G_rey" Command="{Binding SelectColorCommand}" CommandParameter="7" InputGesture="{OnPlatform Ctrl+D7, macOS=cmd+D7}">
+                        <MenuItem Header="{l:I18n Color_Grey}" Command="{Binding SelectColorCommand}" CommandParameter="7" InputGesture="{OnPlatform Ctrl+D7, macOS=cmd+D7}">
                             <MenuItem.Icon>
                                 <Ellipse Width="12" Height="12" Fill="Gray"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="_Lock Input Time" Command="{Binding LockInputTimeCommand}" InputGesture="Escape"/>
-                    <MenuItem Header="_Unlock Input Time" Command="{Binding UnlockInputTimeCommand}" InputGesture="Shift+Escape"/>
-                    <MenuItem Header="_Reset Start Time" Command="{Binding ResetStartTimeCommand}"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_LockInputTime}" i:MenuItem.Icon="mdi-lock" Command="{Binding LockInputTimeCommand}" InputGesture="Escape"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_UnlockInputTime}" i:MenuItem.Icon="mdi-lock-open" Command="{Binding UnlockInputTimeCommand}" InputGesture="Shift+Escape"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_ResetStartTime}" i:MenuItem.Icon="mdi-refresh" Command="{Binding ResetStartTimeCommand}"/>
                     <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <Separator/>
-                    <MenuItem Header="_Switch Time Mode" Command="{Binding SwitchModeCommand}" InputGesture="{OnPlatform Ctrl+T, macOS=cmd+T}"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_SwitchTimeMode}" i:MenuItem.Icon="mdi-timer" Command="{Binding SwitchModeCommand}" InputGesture="{OnPlatform Ctrl+T, macOS=cmd+T}"/>
                     <Separator/>
-                    <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="{OnPlatform Ctrl+Z, macOS=cmd+Z}"/>
-                    <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="{OnPlatform Ctrl+Y, macOS=cmd+Y}"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_Undo}" i:MenuItem.Icon="mdi-arrow-u-left-top" Command="{Binding UndoCommand}" InputGesture="{OnPlatform Ctrl+Z, macOS=cmd+Z}"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_Redo}" i:MenuItem.Icon="mdi-arrow-u-right-top" Command="{Binding RedoCommand}" InputGesture="{OnPlatform Ctrl+Y, macOS=cmd+Y}"/>
                 </MenuItem>
-                <MenuItem Header="Export">
-                    <MenuItem Header="To Text (.txt)" Command="{Binding ExportTextCommand}" InputGesture="{OnPlatform Shift+Ctrl+T, macOS=Shift+cmd+T}"/>
-                    <MenuItem Header="To Excel (.xlsx)" Command="{Binding ExportExcelCommand}" InputGesture="{OnPlatform Shift+Ctrl+E, macOS=Shift+cmd+E}"/>
+                <MenuItem Header="{l:I18n Menu_Export}">
+                    <MenuItem Header="{l:I18n Menu_Export_Text}" i:MenuItem.Icon="mdi-text-box-edit" Command="{Binding ExportTextCommand}" InputGesture="{OnPlatform Shift+Ctrl+T, macOS=Shift+cmd+T}"/>
+                    <MenuItem Header="{l:I18n Menu_Export_Excel}" i:MenuItem.Icon="mdi-microsoft-excel" Command="{Binding ExportExcelCommand}" InputGesture="{OnPlatform Shift+Ctrl+E, macOS=Shift+cmd+E}"/>
                 </MenuItem>
-                <MenuItem Header="Help">
-                    <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" InputGesture="{OnPlatform Ctrl+A, macOS=cmd+A}"/>
+                <MenuItem Header="{l:I18n Menu_Help}">
+                    <MenuItem Header="{l:I18n Menu_Help_About}" i:MenuItem.Icon="mdi-information" Command="{Binding ShowAboutCommand}" InputGesture="{OnPlatform Ctrl+A, macOS=cmd+A}"/>
                 </MenuItem>
             </Menu>    
         </Grid>
@@ -139,15 +139,15 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <views:ColorChoiceCombo Width="65" ShowColorName="False" 
+                            <components:ColorChoiceCombo Width="65" ShowColorName="False" 
                                                     SelectedColor="{Binding MarkerColor, 
                                                     Converter={StaticResource MarkerColorToDefinitionConverter},
                                                     Mode=TwoWay}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime, Mode=TwoWay}" IsVisible="{ReflectionBinding #Root.ViewModel.ShowDateTimeColumn}" IsReadOnly="True"/>
-                <DataGridTemplateColumn Header="Live Time" SortMemberPath="RealDateTime">
+                <DataGridTextColumn Header="{l:I18n Column_DateTime}" Binding="{Binding RealDateTime, Mode=TwoWay}" IsVisible="{Binding #Root.ViewModel.ShowDateTimeColumn}" IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="{l:I18n Column_LiveTime}" SortMemberPath="RealDateTime">
                    <!-- <DataGridTextColumn.Binding> -->
                    <!--     <MultiBinding Converter="{StaticResource LiveTimeMultiConverter}"> -->
                    <!--         <Binding Path="RealDateTime" Mode="TwoWay"/> -->
@@ -167,26 +167,53 @@
                        </DataTemplate>
                    </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
+                <DataGridTextColumn Header="{l:I18n Column_Message}" Binding="{Binding Message}" />
             </DataGrid.Columns>
         </DataGrid>
         
         <Grid Grid.Row="2" ColumnDefinitions="40,150,*,65" Margin="8 4 8 8" VerticalAlignment="Stretch">
-            <ToggleButton Grid.Column="0" Content="{markup:SymbolIcon Timer}" IsChecked="{Binding UseInputLiveTime}" 
+            <ToggleButton Grid.Column="0" i:Attached.Icon="mdi-timer" IsChecked="{Binding !UseInputRealTime}" 
                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                           Padding="0"/>
             <Label Grid.Column="1" IsVisible="{Binding UseInputRealTime}" VerticalAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding InputRealTime, Mode=TwoWay}"/>
             <TextBox Grid.Column="1" IsVisible="{Binding !UseInputRealTime}" Text="{Binding InputLiveTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, Converter={StaticResource LiveTimeConverter}}"
                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             <TextBox VerticalContentAlignment="Center" VerticalAlignment="Stretch" Grid.Column="2" Margin="4 0 4 0" Text="{Binding CurrentInputMessage, Mode=TwoWay}" />
-            <views:ColorChoiceCombo Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+            <components:ColorChoiceCombo Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                     SelectedColor="{Binding CurrentSelectedColor, Converter={StaticResource MarkerColorToDefinitionConverter}, Mode=TwoWay}"/>
         </Grid>
         
         <Grid Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="3" Background="#80000000" IsVisible="{Binding IsLoading}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <ProgressBar IsIndeterminate="True" Width="200" Height="20"/>
-                <TextBlock Text="Please Wait..." Foreground="White" HorizontalAlignment="Center" Margin="0 8 0 0"/>
+                <TextBlock Text="{l:I18n Loading_PleaseWait}" Foreground="White" HorizontalAlignment="Center" Margin="0 8 0 0"/>
+            </StackPanel>
+        </Grid>
+        
+        <Grid Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="3" Background="{StaticResource SystemControlBackgroundAltHighBrush}" 
+              IsVisible="{Binding !FileLinked}" 
+              PointerReleased="DragMove_OnPointerReleased" PointerMoved="DragMove_OnPointerMoved" PointerPressed="DragMove_OnPointerPressed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Label HorizontalAlignment="Center" FontSize="24" FontWeight="Black" Margin="0 0 0 20">Live Marker</Label>
+                <Button Width="150" HorizontalContentAlignment="Center" Command="{Binding CreateCommand}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <i:Icon Value="mdi-file-plus"/>
+                        <TextBlock Margin="8 0 0 0" Text="{l:I18n Menu_File_Create}" />
+                    </StackPanel>
+                </Button>
+                <Button Width="150" Margin="0 4 0 0" HorizontalContentAlignment="Center" Command="{Binding LoadCommand}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <i:Icon Value="mdi-file"/>
+                        <TextBlock Margin="8 0 0 0" Text="{l:I18n Menu_File_Open}" />
+                    </StackPanel>
+                </Button>
+                <Separator Margin="0 8 0 0"/>
+                <Button Width="150" Margin="0 8 0 0" HorizontalContentAlignment="Center" Command="{Binding ExitCommand}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <i:Icon Value="mdi-close-thick"/>
+                        <TextBlock Margin="8 0 0 0" Text="{l:I18n Menu_File_Exit}" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>

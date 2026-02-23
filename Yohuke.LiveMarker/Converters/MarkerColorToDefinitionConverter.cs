@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Data.Converters;
-using Avalonia.Media;
 using Yohuke.LiveMarker.Models;
 using Yohuke.LiveMarker.Utilities;
 

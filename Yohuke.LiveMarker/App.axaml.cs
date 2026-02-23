@@ -1,10 +1,10 @@
-using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
 using Yohuke.LiveMarker.Views;
+using MainWindow = Yohuke.LiveMarker.Views.Windows.MainWindow;
 
 namespace Yohuke.LiveMarker;
 

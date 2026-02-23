@@ -1,7 +1,5 @@
-﻿// Yohuke.LiveMarker/ViewModels/MainWindowViewModel.Commands.cs
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
@@ -9,6 +7,8 @@ using Yohuke.LiveMarker.Actions;
 using Yohuke.LiveMarker.Models;
 using Yohuke.LiveMarker.Utilities;
 using Yohuke.LiveMarker.Views;
+using MainWindow = Yohuke.LiveMarker.Views.Windows.MainWindow;
+using SettingsWindow = Yohuke.LiveMarker.Views.Windows.SettingsWindow;
 
 namespace Yohuke.LiveMarker.ViewModels;
 
@@ -59,7 +59,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private async Task Create()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
-            View, "Create", "yaml",
+            View, AppRuntime.I18N.GetText("Picker_Create"), "yaml",
             [StoragePickerUtilities.FileTypes.Yaml, StoragePickerUtilities.FileTypes.All]);
 
         if (!string.IsNullOrEmpty(path))
@@ -87,7 +87,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     [RelayCommand]
     private async Task ResetStartTime()
     {
-        var box = MessageBoxManager.GetMessageBoxStandard("Reset Start Time", "Are you sure you want to reset the start time? This will recalculate the live time for all markers.", ButtonEnum.YesNo);
+        var box = MessageBoxManager.GetMessageBoxStandard(AppRuntime.I18N.GetText("Dialog_ResetStartTime_Title"), AppRuntime.I18N.GetText("Dialog_ResetStartTime_Message"), ButtonEnum.YesNo);
 
         if (await box.ShowWindowDialogAsync(View) == ButtonResult.Yes)
         {
@@ -113,7 +113,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private async Task SaveAs()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
-            View, "Save markers as", "yaml",
+            View, AppRuntime.I18N.GetText("Picker_SaveAs"), "yaml",
             [StoragePickerUtilities.FileTypes.Yaml, StoragePickerUtilities.FileTypes.All]);
 
         if (!string.IsNullOrWhiteSpace(path))
@@ -126,7 +126,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private async Task Load()
     {
         var path = await StoragePickerUtilities.PickOpenFileAsync(
-            View, "Load markers",
+            View, AppRuntime.I18N.GetText("Picker_Load"),
             [StoragePickerUtilities.FileTypes.Yaml, StoragePickerUtilities.FileTypes.All]);
 
         if (!string.IsNullOrWhiteSpace(path))
@@ -139,7 +139,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private async Task ExportText()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
-            View, "Export as Text", "txt",
+            View, AppRuntime.I18N.GetText("Picker_ExportText"), "txt",
             [StoragePickerUtilities.FileTypes.PlainText, StoragePickerUtilities.FileTypes.All]);
 
         if (!string.IsNullOrWhiteSpace(path))
@@ -152,7 +152,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private async Task ExportExcel()
     {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
-            View, "Export as Excel", "xlsx",
+            View, AppRuntime.I18N.GetText("Picker_ExportExcel"), "xlsx",
             [StoragePickerUtilities.FileTypes.Excel, StoragePickerUtilities.FileTypes.All]);
 
         if (!string.IsNullOrWhiteSpace(path))
@@ -214,7 +214,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     [RelayCommand]
     private async Task ShowAbout()
     {
-        var box = MessageBoxManager.GetMessageBoxStandard("About",
+        var box = MessageBoxManager.GetMessageBoxStandard(AppRuntime.I18N.GetText("Dialog_About_Title"),
             $"By 夜更けのシンフォニー(yosymph.com)\nVersion: {GetType().Assembly.GetName().Version}\nOpen source under GPLv3 License.");
         await box.ShowWindowDialogAsync(View);
     }

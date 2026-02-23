@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Yohuke.LiveMarker.I18n;
 using Yohuke.LiveMarker.Settings;
 
 namespace Yohuke.LiveMarker;
@@ -6,9 +7,13 @@ namespace Yohuke.LiveMarker;
 public static class AppRuntime
 {
     public static AppSettings Settings { get; private set; }
+    public static Localization I18N { get; private set; }
 
     public static async Task Init()
     {
         Settings = await AppSettings.Load();
+        
+        I18N = new Localization();
+        I18N.SetLang(Settings.Language);
     }
 }

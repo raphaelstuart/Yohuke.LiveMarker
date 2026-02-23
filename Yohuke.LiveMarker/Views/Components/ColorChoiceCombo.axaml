@@ -5,17 +5,18 @@
              xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
              xmlns:models="clr-namespace:Yohuke.LiveMarker.Models"
              xmlns:utilities="clr-namespace:Yohuke.LiveMarker.Utilities"
+             xmlns:components="clr-namespace:Yohuke.LiveMarker.Views.Components"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Yohuke.LiveMarker.Views.ColorChoiceCombo">
+             x:Class="Yohuke.LiveMarker.Views.Components.ColorChoiceCombo">
     <ComboBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
               ItemsSource="{x:Static utilities:MarkerColorUtilities.ColorChoices}"
-              SelectedItem="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=views:ColorChoiceCombo}, Mode=TwoWay}">
+              SelectedItem="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType=components:ColorChoiceCombo}, Mode=TwoWay}">
         <ComboBox.ItemTemplate>
             <DataTemplate DataType="{x:Type models:MarkerColorDefinition}">
                 <StackPanel Orientation="Horizontal">
                     <Ellipse Fill="{Binding DisplayColor}" Width="12" Height="12"/>
-                    <TextBlock IsVisible="{Binding ShowColorName, RelativeSource={RelativeSource AncestorType=views:ColorChoiceCombo}, Mode=TwoWay}" 
-                               Margin="4 0 0 0" VerticalAlignment="Center" Text="{Binding Color}"/>
+                    <TextBlock IsVisible="{Binding ShowColorName, RelativeSource={RelativeSource AncestorType=components:ColorChoiceCombo}, Mode=TwoWay}" 
+                               Margin="4 0 0 0" VerticalAlignment="Center" Text="{Binding Name}"/>
                 </StackPanel>
             </DataTemplate>
         </ComboBox.ItemTemplate>
