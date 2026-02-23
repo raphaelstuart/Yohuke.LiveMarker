@@ -7,6 +7,7 @@
         xmlns:views="clr-namespace:Yohuke.LiveMarker.Views"
         xmlns:converters="clr-namespace:Yohuke.LiveMarker.Converters"
         xmlns:markup="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
+        xmlns:liveMarker="clr-namespace:Yohuke.LiveMarker"
         x:Class="Yohuke.LiveMarker.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel" MinHeight="92" MinWidth="600"
         mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="800" Width="750" Height="800" 
@@ -26,9 +27,14 @@
     <Window.KeyBindings>
         <KeyBinding Gesture="Enter" Command="{Binding AddMarkerCommand}"/>
         <KeyBinding Gesture="Escape" Command="{Binding ResetInputTimeCommand}"/>
+        <KeyBinding Gesture="{OnPlatform Ctrl+N, macOS=cmd+N}" Command="{Binding CreateCommand}"/>
+        <KeyBinding Gesture="{OnPlatform Ctrl+O, macOS=cmd+O}" Command="{Binding LoadCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+S, macOS=cmd+S}" Command="{Binding SaveCommand}"/>
+        <KeyBinding Gesture="{OnPlatform Shift+Ctrl+S, macOS=Shift+cmd+S}" Command="{Binding SaveAsCommand}"/>
+        <KeyBinding Gesture="{OnPlatform Shift+Ctrl+P, macOS=Shift+cmd+P}" Command="{Binding OpenSettingsCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+Z, macOS=cmd+Z}" Command="{Binding UndoCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+Y, macOS=cmd+Y}" Command="{Binding RedoCommand}"/>
+        <KeyBinding Gesture="{OnPlatform Ctrl+A, macOS=cmd+A}" Command="{Binding ShowAboutCommand}"/>
       
         <KeyBinding Gesture="{OnPlatform Ctrl+D1, macOS=cmd+D1}" Command="{Binding SelectColorCommand}" CommandParameter="1"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+D2, macOS=cmd+D2}" Command="{Binding SelectColorCommand}" CommandParameter="2"/>
@@ -44,56 +50,59 @@
                 <MenuItem Header="File">
                     <MenuItem Header="_Create" Command="{Binding CreateCommand}" InputGesture="{OnPlatform Ctrl+N, macOS=cmd+N}"/>
                     <Separator/>
+                    <MenuItem Header="_Open" Command="{Binding LoadCommand}" InputGesture="{OnPlatform Ctrl+O, macOS=cmd+O}"/>
                     <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGesture="{OnPlatform Ctrl+S, macOS=cmd+S}"/>
-                    <MenuItem Header="_Load" Command="{Binding LoadCommand}" InputGesture="{OnPlatform Ctrl+O, macOS=cmd+O}"/>
+                    <MenuItem Header="_Save As" Command="{Binding SaveAsCommand}" InputGesture="{OnPlatform Shift+Ctrl+S, macOS=Shift+cmd+S}"/>
                     <Separator/>
-                    <MenuItem Header="_Reset Start Time" Command="{Binding ResetStartTimeCommand}"/>
-                    <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                    <MenuItem Header="_Settings" Command="{Binding OpenSettingsCommand}" InputGesture="{OnPlatform Shift+Ctrl+P, macOS=Shift+cmd+P}"/>
                     <Separator/>
                     <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
                 </MenuItem>
                 <MenuItem Header="Edit">
-                    <MenuItem Header="_Set Input Time" Command="{Binding ResetInputTimeCommand}" InputGesture="Escape"/>
+                    <MenuItem Header="Switch Color">
+                        <MenuItem Header="_Red" Command="{Binding SelectColorCommand}" CommandParameter="1" InputGesture="{OnPlatform Ctrl+D1, macOS=cmd+D1}">
+                            <MenuItem.Icon>
+                                <Ellipse Width="12" Height="12" Fill="Tomato"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Orange" Command="{Binding SelectColorCommand}" CommandParameter="2" InputGesture="{OnPlatform Ctrl+D2, macOS=cmd+D2}">
+                            <MenuItem.Icon>
+                                <Ellipse Width="12" Height="12" Fill="Orange"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Yellow" Command="{Binding SelectColorCommand}" CommandParameter="3" InputGesture="{OnPlatform Ctrl+D3, macOS=cmd+D3}">
+                            <MenuItem.Icon>
+                                <Ellipse Width="12" Height="12" Fill="Yellow"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Green" Command="{Binding SelectColorCommand}" CommandParameter="4" InputGesture="{OnPlatform Ctrl+D4, macOS=cmd+D4}">
+                            <MenuItem.Icon>
+                                <Ellipse Width="12" Height="12" Fill="LawnGreen"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Blue" Command="{Binding SelectColorCommand}" CommandParameter="5" InputGesture="{OnPlatform Ctrl+D5, macOS=cmd+D5}">
+                            <MenuItem.Icon>
+                                <Ellipse Width="12" Height="12" Fill="DodgerBlue"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="_Magenta" Command="{Binding SelectColorCommand}" CommandParameter="6" InputGesture="{OnPlatform Ctrl+D6, macOS=cmd+D6}">
+                            <MenuItem.Icon>
+                                <Ellipse Width="12" Height="12" Fill="Violet"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="G_rey" Command="{Binding SelectColorCommand}" CommandParameter="7" InputGesture="{OnPlatform Ctrl+D7, macOS=cmd+D7}">
+                            <MenuItem.Icon>
+                                <Ellipse Width="12" Height="12" Fill="Gray"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="_Lock Input Time" Command="{Binding ResetInputTimeCommand}" InputGesture="Escape"/>
+                    <MenuItem Header="_Reset Start Time" Command="{Binding ResetStartTimeCommand}"/>
+                    <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <Separator/>
                     <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="{OnPlatform Ctrl+Z, macOS=cmd+Z}"/>
                     <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="{OnPlatform Ctrl+Y, macOS=cmd+Y}"/>
-                </MenuItem>
-                <MenuItem Header="Color">
-                    <MenuItem Header="_Red" Command="{Binding SelectColorCommand}" CommandParameter="1" InputGesture="{OnPlatform Ctrl+D1, macOS=cmd+D1}">
-                        <MenuItem.Icon>
-                            <Ellipse Width="12" Height="12" Fill="Tomato"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Orange" Command="{Binding SelectColorCommand}" CommandParameter="2" InputGesture="{OnPlatform Ctrl+D2, macOS=cmd+D2}">
-                        <MenuItem.Icon>
-                            <Ellipse Width="12" Height="12" Fill="Orange"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Yellow" Command="{Binding SelectColorCommand}" CommandParameter="3" InputGesture="{OnPlatform Ctrl+D3, macOS=cmd+D3}">
-                        <MenuItem.Icon>
-                            <Ellipse Width="12" Height="12" Fill="Yellow"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Green" Command="{Binding SelectColorCommand}" CommandParameter="4" InputGesture="{OnPlatform Ctrl+D4, macOS=cmd+D4}">
-                        <MenuItem.Icon>
-                            <Ellipse Width="12" Height="12" Fill="LawnGreen"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Blue" Command="{Binding SelectColorCommand}" CommandParameter="5" InputGesture="{OnPlatform Ctrl+D5, macOS=cmd+D5}">
-                        <MenuItem.Icon>
-                            <Ellipse Width="12" Height="12" Fill="DodgerBlue"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Magenta" Command="{Binding SelectColorCommand}" CommandParameter="6" InputGesture="{OnPlatform Ctrl+D6, macOS=cmd+D6}">
-                        <MenuItem.Icon>
-                            <Ellipse Width="12" Height="12" Fill="Violet"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="G_rey" Command="{Binding SelectColorCommand}" CommandParameter="7" InputGesture="{OnPlatform Ctrl+D7, macOS=cmd+D7}">
-                        <MenuItem.Icon>
-                            <Ellipse Width="12" Height="12" Fill="Gray"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Export">
                     <MenuItem Header="To Text (.txt)" Command="{Binding ExportTextCommand}" />
@@ -129,7 +138,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime, Mode=TwoWay}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Date Time" Binding="{Binding RealDateTime, Mode=TwoWay}" IsVisible="{ReflectionBinding #Root.ViewModel.ShowDateTimeColumn}" IsReadOnly="True"/>
                 <DataGridTemplateColumn Header="Live Time" SortMemberPath="RealDateTime">
                    <!-- <DataGridTextColumn.Binding> -->
                    <!--     <MultiBinding Converter="{StaticResource LiveTimeMultiConverter}"> -->

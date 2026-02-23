@@ -1,9 +1,5 @@
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Yohuke.LiveMarker.Models;
@@ -51,7 +47,7 @@ public partial class MainWindow : Window
         if (result == ButtonResult.Yes)
         {
             isClosing = true;
-            await ViewModel.QuickSaveCommand.ExecuteAsync(null);
+            await ViewModel.SaveCommand.ExecuteAsync(null);
             Close();
         }
         else if (result == ButtonResult.No)

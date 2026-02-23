@@ -91,8 +91,21 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     [RelayCommand]
     private async Task Save()
     {
+        if (string.IsNullOrWhiteSpace(CurrentFileLocation))
+        {
+            await SaveAs();
+        }
+        else
+        {
+            await SaveInternal(CurrentFileLocation);
+        }
+    }
+    
+    [RelayCommand]
+    private async Task SaveAs()
+    {
         var path = await StoragePickerUtilities.PickSaveFileAsync(
-            View, "Save markers", "yaml",
+            View, "Save markers as", "yaml",
             [StoragePickerUtilities.FileTypes.Yaml, StoragePickerUtilities.FileTypes.All]);
 
         if (!string.IsNullOrWhiteSpace(path))
@@ -111,19 +124,6 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         if (!string.IsNullOrWhiteSpace(path))
         {
             await LoadInternal(path);
-        }
-    }
-    
-    [RelayCommand]
-    private async Task QuickSave()
-    {
-        if (string.IsNullOrWhiteSpace(CurrentFileLocation))
-        {
-            await Save();
-        }
-        else
-        {
-            await SaveInternal(CurrentFileLocation);
         }
     }
     
@@ -228,5 +228,13 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private void Exit()
     {
         View.Close();
+    }
+
+    [RelayCommand]
+    private async Task OpenSettings()
+    {
+        var popup = new SettingsWindow();
+        await popup.ShowDialog(View);
+        ShowDateTimeColumn = AppRuntime.Settings.ShowDateTimeColumn;
     }
 }

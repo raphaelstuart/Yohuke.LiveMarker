@@ -9,6 +9,7 @@ using MsBox.Avalonia;
 using Yohuke.LiveMarker.Actions;
 using Yohuke.LiveMarker.Exporters;
 using Yohuke.LiveMarker.Models;
+using Yohuke.LiveMarker.Settings;
 using Yohuke.LiveMarker.Utilities;
 using Yohuke.LiveMarker.Views;
 
@@ -24,6 +25,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     [ObservableProperty] private bool isLoading = false;
     [ObservableProperty] private string currentFileLocation;
     [ObservableProperty] private bool useInputRealTime = true;
+    [ObservableProperty] private bool showDateTimeColumn = AppRuntime.Settings?.ShowDateTimeColumn ?? true;
 
     public ActionManager ActionManager { get; } = new();
 
@@ -54,7 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
     private async Task AutoSave()
     {
-        if (!string.IsNullOrWhiteSpace(CurrentFileLocation))
+        if (!string.IsNullOrWhiteSpace(CurrentFileLocation) && AppRuntime.Settings.EnableAutoSave)
         {
             await SaveInternal(CurrentFileLocation);
         }
