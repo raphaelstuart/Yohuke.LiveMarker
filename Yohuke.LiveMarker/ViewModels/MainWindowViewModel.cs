@@ -25,6 +25,18 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     [ObservableProperty] private bool isLoading = false;
     [ObservableProperty] private string currentFileLocation;
     [ObservableProperty] private bool useInputRealTime = true;
+
+    partial void OnUseInputRealTimeChanged(bool value)
+    {
+        OnPropertyChanged(nameof(UseInputLiveTime));
+    }
+
+    public bool UseInputLiveTime
+    {
+        get => !UseInputRealTime;
+        set => UseInputRealTime = !value;
+    }
+
     [ObservableProperty] private bool showDateTimeColumn = AppRuntime.Settings?.ShowDateTimeColumn ?? true;
 
     public ActionManager ActionManager { get; } = new();
@@ -33,7 +45,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     private MarkerData editingMarker;
     private bool isActionInprogress;
     private bool isEditing;
-    private bool manuallyChangingInputTime;
+    private bool lockingInputTime;
 
     private async Task ShowErrorAsync(string message)
     {
@@ -41,16 +53,31 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         await box.ShowAsPopupAsync(View);
     }
 
+    private bool isApplyingParsedTime;
+
     partial void OnCurrentInputMessageChanged(string oldValue, string newValue)
     {
-        if (manuallyChangingInputTime)
+        // Auto-detect time pattern at the beginning of input and apply as LiveTime
+        if (!isApplyingParsedTime &&
+            !string.IsNullOrWhiteSpace(newValue) &&
+            TimeUtilities.TryParseFlexibleTime(newValue, out var parsedTime, out var remaining))
+        {
+            isApplyingParsedTime = true;
+            UseInputRealTime = false;
+            InputLiveTime = parsedTime;
+            CurrentInputMessage = remaining;
+            isApplyingParsedTime = false;
+            return;
+        }
+
+        if (lockingInputTime || isApplyingParsedTime)
         {
             return;
         }
 
         if (string.IsNullOrWhiteSpace(oldValue) && !string.IsNullOrWhiteSpace(newValue))
         {
-            ResetInputTime();
+            LockInputTime();
         }
     }
 
@@ -145,7 +172,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
                 marker.PropertyChanged += OnDataPropertyChanged;
             }
             
-            SetSource();
+            SetGridSortOrder();
         }
         catch (Exception ex)
         {
@@ -168,10 +195,10 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         await SaveInternal(path);
     }
 
-    private void SetSource()
+    public void SetGridSortOrder()
     {
         var view = new DataGridCollectionView(Data.Marker);
-        view.SortDescriptions.Add(DataGridSortDescription.FromPath(nameof(MarkerData.RealDateTime), ListSortDirection.Ascending));
+        view.SortDescriptions.Add(DataGridSortDescription.FromPath(nameof(MarkerData.RealDateTime)));
 
         View.MarkerDataGrid.ItemsSource = view;
     }
@@ -201,7 +228,5 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
         };
     }
 
-    public MainWindowViewModel()
-    {
-    }
+    public MainWindowViewModel() { }
 }

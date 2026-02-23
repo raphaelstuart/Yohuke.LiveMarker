@@ -15,6 +15,7 @@ public partial class MainWindow : Window
         ViewModel = new MainWindowViewModel(this);
         InitializeComponent();
         
+        ViewModel.SetGridSortOrder();
         ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.PreferSystemChrome;
     }
     

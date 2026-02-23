@@ -26,7 +26,8 @@
     </Window.Resources>
     <Window.KeyBindings>
         <KeyBinding Gesture="Enter" Command="{Binding AddMarkerCommand}"/>
-        <KeyBinding Gesture="Escape" Command="{Binding ResetInputTimeCommand}"/>
+        <KeyBinding Gesture="Escape" Command="{Binding LockInputTimeCommand}"/>
+        <KeyBinding Gesture="Shift+Escape" Command="{Binding UnlockInputTimeCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+N, macOS=cmd+N}" Command="{Binding CreateCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+O, macOS=cmd+O}" Command="{Binding LoadCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+S, macOS=cmd+S}" Command="{Binding SaveCommand}"/>
@@ -35,6 +36,10 @@
         <KeyBinding Gesture="{OnPlatform Ctrl+Z, macOS=cmd+Z}" Command="{Binding UndoCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+Y, macOS=cmd+Y}" Command="{Binding RedoCommand}"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+A, macOS=cmd+A}" Command="{Binding ShowAboutCommand}"/>
+        <KeyBinding Gesture="{OnPlatform Ctrl+T, macOS=cmd+T}" Command="{Binding SwitchModeCommand}"/>
+        
+        <KeyBinding Gesture="{OnPlatform Shift+Ctrl+T, macOS=Shift+cmd+T}" Command="{Binding ExportTextCommand}"/>
+        <KeyBinding Gesture="{OnPlatform Shift+Ctrl+E, macOS=Shift+cmd+E}" Command="{Binding ExportExcelCommand}"/>
       
         <KeyBinding Gesture="{OnPlatform Ctrl+D1, macOS=cmd+D1}" Command="{Binding SelectColorCommand}" CommandParameter="1"/>
         <KeyBinding Gesture="{OnPlatform Ctrl+D2, macOS=cmd+D2}" Command="{Binding SelectColorCommand}" CommandParameter="2"/>
@@ -97,16 +102,19 @@
                         </MenuItem>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="_Lock Input Time" Command="{Binding ResetInputTimeCommand}" InputGesture="Escape"/>
+                    <MenuItem Header="_Lock Input Time" Command="{Binding LockInputTimeCommand}" InputGesture="Escape"/>
+                    <MenuItem Header="_Unlock Input Time" Command="{Binding UnlockInputTimeCommand}" InputGesture="Shift+Escape"/>
                     <MenuItem Header="_Reset Start Time" Command="{Binding ResetStartTimeCommand}"/>
                     <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                    <Separator/>
+                    <MenuItem Header="_Switch Time Mode" Command="{Binding SwitchModeCommand}" InputGesture="{OnPlatform Ctrl+T, macOS=cmd+T}"/>
                     <Separator/>
                     <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="{OnPlatform Ctrl+Z, macOS=cmd+Z}"/>
                     <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="{OnPlatform Ctrl+Y, macOS=cmd+Y}"/>
                 </MenuItem>
                 <MenuItem Header="Export">
-                    <MenuItem Header="To Text (.txt)" Command="{Binding ExportTextCommand}" />
-                    <MenuItem Header="To Excel (.xlsx)" Command="{Binding ExportExcelCommand}"/>
+                    <MenuItem Header="To Text (.txt)" Command="{Binding ExportTextCommand}" InputGesture="{OnPlatform Shift+Ctrl+T, macOS=Shift+cmd+T}"/>
+                    <MenuItem Header="To Excel (.xlsx)" Command="{Binding ExportExcelCommand}" InputGesture="{OnPlatform Shift+Ctrl+E, macOS=Shift+cmd+E}"/>
                 </MenuItem>
                 <MenuItem Header="Help">
                     <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" InputGesture="{OnPlatform Ctrl+A, macOS=cmd+A}"/>
@@ -163,13 +171,14 @@
             </DataGrid.Columns>
         </DataGrid>
         
-        <Grid Grid.Row="2" ColumnDefinitions="150,38,*,65" Margin="8 4 8 8" VerticalAlignment="Stretch">
-            <Label Grid.Column="0" IsVisible="{Binding UseInputRealTime}" VerticalAlignment="Center" Content="{Binding InputRealTime, Mode=TwoWay}"/>
-            <TextBox Grid.Column="0" IsVisible="{Binding !UseInputRealTime}" Text="{Binding InputLiveTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, Converter={StaticResource LiveTimeConverter}}"
-                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
-            <ToggleButton Grid.Column="1" Content="{markup:SymbolIcon Timer}" Command="{Binding SwitchModeCommand}" 
-                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <TextBox VerticalContentAlignment="Center" Grid.Column="2" Text="{Binding CurrentInputMessage, Mode=TwoWay}" />
+        <Grid Grid.Row="2" ColumnDefinitions="40,150,*,65" Margin="8 4 8 8" VerticalAlignment="Stretch">
+            <ToggleButton Grid.Column="0" Content="{markup:SymbolIcon Timer}" IsChecked="{Binding UseInputLiveTime}" 
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                          Padding="0"/>
+            <Label Grid.Column="1" IsVisible="{Binding UseInputRealTime}" VerticalAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding InputRealTime, Mode=TwoWay}"/>
+            <TextBox Grid.Column="1" IsVisible="{Binding !UseInputRealTime}" Text="{Binding InputLiveTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, Converter={StaticResource LiveTimeConverter}}"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+            <TextBox VerticalContentAlignment="Center" VerticalAlignment="Stretch" Grid.Column="2" Margin="4 0 4 0" Text="{Binding CurrentInputMessage, Mode=TwoWay}" />
             <views:ColorChoiceCombo Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                     SelectedColor="{Binding CurrentSelectedColor, Converter={StaticResource MarkerColorToDefinitionConverter}, Mode=TwoWay}"/>
         </Grid>

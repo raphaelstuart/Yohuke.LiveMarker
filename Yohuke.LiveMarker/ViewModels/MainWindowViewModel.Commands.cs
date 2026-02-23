@@ -22,7 +22,7 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
             return;
         }
 
-        manuallyChangingInputTime = false;
+        lockingInputTime = false;
         var d = new MarkerData
         {
             Message = CurrentInputMessage,
@@ -69,9 +69,17 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
     }
     
     [RelayCommand]
-    private void ResetInputTime()
+    private void LockInputTime()
     {
-        manuallyChangingInputTime = true;
+        lockingInputTime = true;
+        InputRealTime = DateTime.Now;
+        InputLiveTime = DateTime.Now - Data.StartTime;
+    }
+    
+    [RelayCommand]
+    private void UnlockInputTime()
+    {
+        lockingInputTime = false;
         InputRealTime = DateTime.Now;
         InputLiveTime = DateTime.Now - Data.StartTime;
     }
