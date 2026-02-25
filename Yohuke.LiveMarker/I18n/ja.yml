@@ -12,6 +12,7 @@ Menu_Edit_LockInputTime: "入力時刻をロック"
 Menu_Edit_UnlockInputTime: "入力時刻をアンロック"
 Menu_Edit_ResetStartTime: "開始時刻をリセット"
 Menu_Edit_SwitchTimeMode: "時間モードを切替"
+Menu_Edit_SetTimeOffset: "時間オフセットを設定"
 Menu_Edit_Undo: "元に戻す"
 Menu_Edit_Redo: "やり直し"
 
@@ -61,3 +62,7 @@ Picker_ExportExcel: "Excelとしてエクスポート"
 
 Loading_PleaseWait: "お待ちください..."
 
+OffsetTime_Title: "時間オフセットを設定"
+OffsetTime_Prompt: "時間オフセットを入力してください（例：+00:05:00 または -00:05:00）："
+OffsetTime_InvalidInput: "形式が無効です。[+/-]hh:mm:ss を使用してください"
+OffsetTime_Confirm: "確認"

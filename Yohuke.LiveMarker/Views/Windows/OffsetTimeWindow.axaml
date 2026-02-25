@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Yohuke.LiveMarker.ViewModels"
+        xmlns:i18n="clr-namespace:Yohuke.LiveMarker.I18n"
+        mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="160"
+        x:Class="Yohuke.LiveMarker.Views.Windows.OffsetTimeWindow"
+        x:DataType="vm:OffsetTimeWindowViewModel"
+        Title="{i18n:I18n OffsetTime_Title}"
+        Width="360"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <Design.DataContext>
+        <vm:OffsetTimeWindowViewModel/>
+    </Design.DataContext>
+
+    <StackPanel Margin="24" Spacing="16">
+        <StackPanel Spacing="8">
+            <TextBlock Text="{i18n:I18n OffsetTime_Prompt}"/>
+            <TextBox Text="{Binding OffsetInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Watermark="+00:00:00 / -00:05:00"/>
+            <TextBlock Text="{i18n:I18n OffsetTime_InvalidInput}"
+                       Foreground="Red"
+                       IsVisible="{Binding ShowInvalidHint}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Content="{i18n:I18n OffsetTime_Confirm}"
+                    Command="{Binding ConfirmCommand}"
+                    IsEnabled="{Binding IsInputValid}"
+                    Width="80"
+                    HorizontalContentAlignment="Center"/>
+            <Button Content="{i18n:I18n Settings_Cancel}"
+                    Command="{Binding CancelCommand}"
+                    Width="80"
+                    HorizontalContentAlignment="Center"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
+
+
+

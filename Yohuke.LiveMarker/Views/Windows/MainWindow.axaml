@@ -104,10 +104,11 @@
                     <Separator/>
                     <MenuItem Header="{l:I18n Menu_Edit_LockInputTime}" i:MenuItem.Icon="mdi-lock" Command="{Binding LockInputTimeCommand}" InputGesture="Escape"/>
                     <MenuItem Header="{l:I18n Menu_Edit_UnlockInputTime}" i:MenuItem.Icon="mdi-lock-open" Command="{Binding UnlockInputTimeCommand}" InputGesture="Shift+Escape"/>
-                    <MenuItem Header="{l:I18n Menu_Edit_ResetStartTime}" i:MenuItem.Icon="mdi-refresh" Command="{Binding ResetStartTimeCommand}"/>
-                    <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <Separator/>
                     <MenuItem Header="{l:I18n Menu_Edit_SwitchTimeMode}" i:MenuItem.Icon="mdi-timer" Command="{Binding SwitchModeCommand}" InputGesture="{OnPlatform Ctrl+T, macOS=cmd+T}"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_SetTimeOffset}" i:MenuItem.Icon="mdi-timer-edit" Command="{Binding SetTimeOffsetCommand}"/>
+                    <MenuItem Header="{l:I18n Menu_Edit_ResetStartTime}" i:MenuItem.Icon="mdi-refresh" Command="{Binding ResetStartTimeCommand}"/>
+                    <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Data.StartTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <Separator/>
                     <MenuItem Header="{l:I18n Menu_Edit_Undo}" i:MenuItem.Icon="mdi-arrow-u-left-top" Command="{Binding UndoCommand}" InputGesture="{OnPlatform Ctrl+Z, macOS=cmd+Z}"/>
                     <MenuItem Header="{l:I18n Menu_Edit_Redo}" i:MenuItem.Icon="mdi-arrow-u-right-top" Command="{Binding RedoCommand}" InputGesture="{OnPlatform Ctrl+Y, macOS=cmd+Y}"/>

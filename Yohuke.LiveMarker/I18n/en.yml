@@ -12,6 +12,7 @@ Menu_Edit_LockInputTime: "Lock Input Time"
 Menu_Edit_UnlockInputTime: "Unlock Input Time"
 Menu_Edit_ResetStartTime: "Reset Start Time"
 Menu_Edit_SwitchTimeMode: "Switch Time Mode"
+Menu_Edit_SetTimeOffset: "Set Time Offset"
 Menu_Edit_Undo: "Undo"
 Menu_Edit_Redo: "Redo"
 
@@ -61,3 +62,7 @@ Picker_ExportExcel: "Export as Excel"
 
 Loading_PleaseWait: "Please Wait..."
 
+OffsetTime_Title: "Set Time Offset"
+OffsetTime_Prompt: "Enter time offset (e.g. +00:05:00 or -00:05:00):"
+OffsetTime_InvalidInput: "Invalid format. Use [+/-]hh:mm:ss"
+OffsetTime_Confirm: "Confirm"

@@ -8,6 +8,7 @@ using Yohuke.LiveMarker.Models;
 using Yohuke.LiveMarker.Utilities;
 using Yohuke.LiveMarker.Views;
 using MainWindow = Yohuke.LiveMarker.Views.Windows.MainWindow;
+using OffsetTimeWindow = Yohuke.LiveMarker.Views.Windows.OffsetTimeWindow;
 using SettingsWindow = Yohuke.LiveMarker.Views.Windows.SettingsWindow;
 
 namespace Yohuke.LiveMarker.ViewModels;
@@ -170,7 +171,9 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
 
             var action = new DeleteMarkerAction(Data.Marker, marker);
             ActionManager.ExecuteAction(action);
-
+            
+            Data.Marker.Remove(marker);
+            
             await AutoSave();
         }
     }
@@ -228,6 +231,27 @@ public partial class MainWindowViewModel : ViewModelBase<MainWindow>
             if (index <= colors.Length)
             {
                 CurrentSelectedColor = colors[index - 1];
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task SetTimeOffset()
+    {
+        var popup = new OffsetTimeWindow();
+        var result = await popup.ShowDialog<TimeSpan?>(View);
+        if (result.HasValue && Data?.Marker != null && Data.Marker.Count > 0)
+        {
+            isActionInprogress = true;
+            try
+            {
+                var action = new OffsetAllMarkersAction(Data.Marker, result.Value);
+                ActionManager.ExecuteAction(action);
+                await AutoSave();
+            }
+            finally
+            {
+                isActionInprogress = false;
             }
         }
     }

@@ -12,6 +12,7 @@ Menu_Edit_LockInputTime: "锁定输入时间"
 Menu_Edit_UnlockInputTime: "解锁输入时间"
 Menu_Edit_ResetStartTime: "重置开始时间"
 Menu_Edit_SwitchTimeMode: "切换时间模式"
+Menu_Edit_SetTimeOffset: "设置时间偏移"
 Menu_Edit_Undo: "撤销"
 Menu_Edit_Redo: "重做"
 
@@ -61,3 +62,7 @@ Picker_ExportExcel: "导出为Excel"
 
 Loading_PleaseWait: "请稍候..."
 
+OffsetTime_Title: "设置时间偏移"
+OffsetTime_Prompt: "输入时间偏移量（例如 +00:05:00 或 -00:05:00）："
+OffsetTime_InvalidInput: "格式无效，请使用 [+/-]hh:mm:ss"
+OffsetTime_Confirm: "确认"
